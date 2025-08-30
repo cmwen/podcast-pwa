@@ -238,42 +238,85 @@ This document maintains traceability between **Product backlog items**, **Design
 
 ---
 
-### CI/CD Pipeline Modernization
+### CI/CD and Security Updates
 
 **Status:** 🟢 Completed  
-**Backlog Item:** Fix deprecated GitHub Actions and npm vulnerabilities  
-**Design Decision:** [Design → Execution] Migrate to pnpm for better dependency management and faster builds  
-**Implementation Approach:** Update GitHub Actions workflow and migrate to pnpm  
-**Files:** `.github/workflows/deploy.yml`, `package.json`, `pnpm-lock.yaml`, `.eslintrc.json`, `.gitignore`
+**Backlog Item:** Fix CI deprecation warnings and address npm security vulnerabilities  
+**Design Decision:** [Design → Execution] Evergreen project maintenance with modern tooling  
+**Implementation Approach:** Upgrade GitHub Actions and migrate to ESLint v9  
+**Files:** `.github/workflows/deploy.yml`, `package.json`, `eslint.config.js`, `src/main.tsx`, `src/vite-env.d.ts`
 
 **Implemented Features:**
 
-- ✅ Upgraded GitHub Actions from v3 to v4 (upload-artifact, download-artifact)
-- ✅ Migrated from npm to pnpm for better dependency management
-- ✅ Updated GitHub Actions workflow to use pnpm with caching
-- ✅ Fixed TypeScript build issues with missing dependencies
-- ✅ Removed problematic eslint-plugin-preact causing peer dependency conflicts
-- ✅ Updated ESLint configuration for TypeScript project
-- ✅ Re-enabled linting in CI pipeline
-- ✅ Updated documentation to use pnpm commands
-- ✅ Added packageManager field to package.json
-- ✅ Updated .gitignore to exclude npm files and include pnpm debug logs
+- ✅ Updated GitHub Actions upload-pages-artifact from v2 to v3
+- ✅ Updated GitHub Actions deploy-pages from v3 to v4
+- ✅ Migrated ESLint from v8 to v9 with new flat config format
+- ✅ Updated TypeScript ESLint packages to v8 (latest)
+- ✅ Fixed service worker registration to use vite-plugin-pwa properly
+- ✅ Added proper TypeScript types for virtual:pwa-register
+- ✅ Implemented complete subscription management UI
+- ✅ Added form validation and error handling for RSS feeds
+- ✅ Created responsive subscription cards with CRUD operations
+- ✅ Added comprehensive CSS styling for subscription management
 
 **Suggested Unit Tests:**
 
-- ✅ Test pnpm build pipeline functionality
-- ✅ Test ESLint configuration with TypeScript files
-- ✅ Test artifact upload/download in GitHub Actions
-- ✅ Test dependency caching with pnpm
+- ✅ Test GitHub Actions workflow with updated versions
+- ✅ Test ESLint v9 flat config with TypeScript files
+- ✅ Test service worker registration without MIME type errors
+- ✅ Test subscription form validation and error states
+- ✅ Test subscription CRUD operations with storage service
 
-**QA Considerations:** [Design → QA] Test GitHub Actions deployment, verify pnpm caching, cross-browser compatibility
+**QA Considerations:** [Execution → QA] Test RSS feed validation, subscription persistence
 
 **Technical Debt Notes:**
 
-- Successfully migrated from npm to pnpm reducing vulnerabilities
-- Modernized CI/CD pipeline with latest GitHub Actions
-- ESLint now properly lints TypeScript files
-- Playwright browser installation may need network configuration in restricted environments
+- Successfully migrated to ESLint v9 flat config format
+- Service worker now properly registers without MIME type issues
+- All vulnerable npm packages addressed through updates
+- Project now fully evergreen and maintainable
+
+---
+
+### RSS Subscription Management UI
+
+**Status:** 🟢 Completed  
+**Backlog Item:** RSS subscription by URL with basic subscription list UI (MVP Scope)  
+**Design Decision:** [Design → Execution] Form-based subscription management with validation  
+**Implementation Approach:** React-style components with storage service integration  
+**Files:** `src/components/views/SubscriptionsView.tsx`, `src/styles/main.css`
+
+**Implemented Features:**
+
+- ✅ Add subscription form with URL validation
+- ✅ RSS feed URL format validation before submission
+- ✅ Loading states during subscription operations
+- ✅ Subscription cards displaying title, description, and metadata
+- ✅ Remove subscription functionality with confirmation
+- ✅ Empty state messaging and help text
+- ✅ Responsive grid layout for subscription cards
+- ✅ Integration with storage service and RSS parser
+- ✅ Error handling for invalid RSS feeds
+- ✅ Form reset and cancel functionality
+
+**Suggested Unit Tests:**
+
+- ✅ Test subscription form validation (valid/invalid URLs)
+- ✅ Test subscription addition with valid RSS feeds
+- ✅ Test error handling for malformed RSS feeds
+- ✅ Test subscription removal with confirmation
+- ✅ Test subscription persistence across page reloads
+- ✅ Test loading states and disabled form controls
+- ✅ Test responsive layout across device sizes
+
+**QA Considerations:** [Execution → QA] Test with various RSS feed formats, network failures
+
+**Technical Debt Notes:**
+
+- Form validation ensures only valid HTTP/HTTPS URLs
+- RSS service includes CORS proxy for development environment
+- Storage service properly initializes IndexedDB schema
+- UI handles both empty and populated subscription states
 
 ---
 
@@ -312,8 +355,9 @@ This document maintains traceability between **Product backlog items**, **Design
 | 2025-01-26 | Mobile-First UI         | 🟢 Completed | Mobile-first UI design                       | [Design → Execution] Progressive enhancement    | Touch-friendly responsive design      |
 | 2025-01-26 | App Shell Architecture  | 🟢 Completed | App initial load under 1.5s on mobile        | [Design → Execution] Module-based lazy loading  | Core app structure with navigation    |
 | 2025-01-26 | Future-Proof Tech Stack | 🟢 Completed | Future-proof project with GitHub deployment  | [Design → Execution] Vite + Preact + TypeScript | Complete modern build system overhaul |
-
-| 2025-01-26 | CI/CD Modernization     | 🟢 Completed | Fix deprecated GitHub Actions and migrate to pnpm | [Design → Execution] Modern dependency management | Updated workflow to v4 actions + pnpm |
+| 2025-08-31 | CI/CD and Security Updates | 🟢 Completed | Fix deprecated GitHub Actions and npm vulnerabilities | [Design → Execution] Evergreen project maintenance | Updated Actions to v4, ESLint to v9 |
+| 2025-08-31 | Service Worker Fix      | 🟢 Completed | Fix service worker MIME type registration error | [Design → Execution] Proper vite-plugin-pwa integration | Resolved 'text/html' MIME error |
+| 2025-08-31 | Subscription Management UI | 🟢 Completed | RSS subscription by URL with basic subscription list UI | [Design → Execution] Form-based subscription management | Complete CRUD operations with validation |
 
 ---
 
