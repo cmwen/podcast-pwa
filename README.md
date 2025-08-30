@@ -8,6 +8,9 @@ A lightweight Progressive Web App (PWA) for listening to podcasts. This app can 
 - Download episodes for offline playback
 - Installable on mobile devices as a PWA
 - Lightweight and fast
+ - 2x and variable-speed playback (2x required)
+ - Basic UI to manage podcast subscriptions (add, remove, list)
+ - Playlist support (create, reorder, play queue)
 
 ## Installation
 
@@ -40,6 +43,7 @@ A lightweight Progressive Web App (PWA) for listening to podcasts. This app can 
 - CSS3
 - JavaScript (ES6+)
 - Service Workers for offline functionality
+ - IndexedDB (recommended) for persistent storage
 
 ## Contributing
 
