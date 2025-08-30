@@ -24,7 +24,7 @@ const updateSW = registerSW({
   },
   onRegisterError(error: any) {
     console.error('[Execution] Service Worker registration failed:', error)
-  }
+  },
 })
 
 // Handle PWA installation prompt

@@ -48,7 +48,7 @@ export function SubscriptionsView() {
 
       // Fetch and validate the RSS feed
       const feed = await rssService.fetchFeed(newFeedUrl)
-      
+
       // Create subscription object
       const subscription: Subscription = {
         id: crypto.randomUUID(),
@@ -57,12 +57,12 @@ export function SubscriptionsView() {
         description: feed.description,
         imageUrl: undefined, // TODO: Extract from feed
         lastFetched: new Date(),
-        isActive: true
+        isActive: true,
       }
 
       // Save to storage
       await storageService.addSubscription(subscription)
-      
+
       // Update local state
       setSubscriptions(prev => [...prev, subscription])
       setNewFeedUrl('')
@@ -71,7 +71,9 @@ export function SubscriptionsView() {
       console.log('[Execution] Subscription added successfully:', subscription.title)
     } catch (error) {
       console.error('[Execution] Add subscription failed:', error)
-      alert(`Failed to add subscription: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      alert(
+        `Failed to add subscription: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
     } finally {
       setIsAddingSubscription(false)
       appState.value = { ...appState.value, isLoading: false }
@@ -105,11 +107,7 @@ export function SubscriptionsView() {
       <div className="section-header">
         <h2>Subscriptions</h2>
         {!isAddingSubscription && (
-          <button
-            className="btn-primary"
-            onClick={showAddForm}
-            disabled={appState.value.isLoading}
-          >
+          <button className="btn-primary" onClick={showAddForm} disabled={appState.value.isLoading}>
             Add Podcast
           </button>
         )}
@@ -124,7 +122,7 @@ export function SubscriptionsView() {
               id="feed-url"
               type="url"
               value={newFeedUrl}
-              onInput={(e) => setNewFeedUrl((e.target as HTMLInputElement).value)}
+              onInput={e => setNewFeedUrl((e.target as HTMLInputElement).value)}
               placeholder="https://example.com/podcast/feed.xml"
               disabled={appState.value.isLoading}
             />
@@ -158,17 +156,16 @@ export function SubscriptionsView() {
           </div>
         ) : (
           <div className="subscription-grid">
-            {subscriptions.map((subscription) => (
+            {subscriptions.map(subscription => (
               <div key={subscription.id} className="subscription-card">
                 <div className="subscription-info">
                   <h3 className="subscription-title">{subscription.title}</h3>
                   <p className="subscription-description">
-                    {subscription.description ? 
-                      subscription.description.length > 100 
+                    {subscription.description
+                      ? subscription.description.length > 100
                         ? subscription.description.substring(0, 100) + '...'
                         : subscription.description
-                      : 'No description available'
-                    }
+                      : 'No description available'}
                   </p>
                   <p className="subscription-url">{subscription.url}</p>
                   <p className="subscription-meta">
