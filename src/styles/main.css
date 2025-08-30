@@ -13,7 +13,7 @@
   --success-color: #28a745;
   --warning-color: #ffc107;
   --error-color: #dc3545;
-  
+
   /* Layout */
   --header-height: 64px;
   --nav-height: 56px;
@@ -22,7 +22,7 @@
   --spacing-md: 16px;
   --spacing-lg: 24px;
   --spacing-xl: 32px;
-  
+
   /* Touch targets */
   --touch-target: 44px;
   --border-radius: 8px;
@@ -212,8 +212,12 @@ body {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive Design - Tablet and Desktop */
@@ -222,13 +226,13 @@ body {
     max-width: 400px;
     margin: 0 auto;
   }
-  
+
   .main-content {
     max-width: 800px;
     margin: 0 auto;
     padding: var(--spacing-lg);
   }
-  
+
   .section-header {
     flex-wrap: nowrap;
   }
@@ -239,7 +243,7 @@ body {
     max-width: 1000px;
     padding: var(--spacing-xl);
   }
-  
+
   .subscriptions-list,
   .playlists-list {
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -253,13 +257,13 @@ body {
     color: var(--text-secondary);
     border-color: var(--border-color);
   }
-  
+
   .nav-btn.active:hover {
     background-color: var(--primary-color);
     color: var(--text-color);
     border-color: var(--primary-color);
   }
-  
+
   .btn-primary:hover {
     background-color: var(--primary-color);
   }

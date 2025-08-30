@@ -44,13 +44,13 @@ This document serves as the central hub for all design decisions, architecture c
 
 ### Traceability: Product Backlog → Design → Execution → QA
 
-| **Product Requirement** | **Design Decision** | **Technical Implementation** | **QA Considerations** |
-|------------------------|-------------------|----------------------------|---------------------|
-| RSS Subscription Management | [Design → Execution] Centralized subscription store with validation | IndexedDB schema + RSS parser module | **[Design → QA]** Test invalid RSS feeds, network failures |
-| Offline Episode Playback | [Design → Execution] Cache API for audio + metadata sync | Service Worker caching strategy | **[Design → QA]** Verify playback without network |
-| Variable Speed Playback (2x required) | [Design → Execution] HTML5 Audio API wrapper with persistent settings | Custom audio controller with speed state | **[Design → QA]** Cross-browser speed accuracy testing |
-| Playlist Management | [Design → Execution] Drag-drop reorder + persistent queue state | React/Vanilla JS drag handlers + IndexedDB | **[Design → QA]** Test reorder persistence across sessions |
-| Mobile-First UI | [Design → Execution] Progressive enhancement from mobile breakpoints | CSS Grid/Flexbox with touch-friendly controls | **[Design → QA]** Touch interaction testing on actual devices |
+| **Product Requirement**               | **Design Decision**                                                   | **Technical Implementation**                  | **QA Considerations**                                         |
+| ------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------- | ------------------------------------------------------------- |
+| RSS Subscription Management           | [Design → Execution] Centralized subscription store with validation   | IndexedDB schema + RSS parser module          | **[Design → QA]** Test invalid RSS feeds, network failures    |
+| Offline Episode Playback              | [Design → Execution] Cache API for audio + metadata sync              | Service Worker caching strategy               | **[Design → QA]** Verify playback without network             |
+| Variable Speed Playback (2x required) | [Design → Execution] HTML5 Audio API wrapper with persistent settings | Custom audio controller with speed state      | **[Design → QA]** Cross-browser speed accuracy testing        |
+| Playlist Management                   | [Design → Execution] Drag-drop reorder + persistent queue state       | React/Vanilla JS drag handlers + IndexedDB    | **[Design → QA]** Test reorder persistence across sessions    |
+| Mobile-First UI                       | [Design → Execution] Progressive enhancement from mobile breakpoints  | CSS Grid/Flexbox with touch-friendly controls | **[Design → QA]** Touch interaction testing on actual devices |
 
 ---
 
@@ -61,15 +61,18 @@ This document serves as the central hub for all design decisions, architecture c
 **Requirement Trace:** RSS subscription by URL with basic subscription list UI (MVP Scope)
 
 **Design Approaches Considered:**
+
 1. **Cloud-sync subscriptions** (Rejected: Against privacy-first vision)
 2. **Local-only with export/import** (Selected: Aligns with local-first approach)
 
 **Trade-offs:**
+
 - ✅ **Pro:** Complete user privacy, no account required
 - ❌ **Con:** No cross-device sync (acceptable for MVP)
 - ⚠️ **Risk:** Data loss if browser storage cleared
 
 **Implementation Notes:**
+
 ```
 IndexedDB Schema:
 subscriptions: {
@@ -92,15 +95,18 @@ subscriptions: {
 **Requirement Trace:** Download episodes for offline listening (Core Feature)
 
 **Design Approaches Considered:**
+
 1. **Blob URLs in memory** (Rejected: Memory constraints on mobile)
 2. **Cache API with Service Worker** (Selected: PWA standard, efficient)
 
 **Trade-offs:**
+
 - ✅ **Pro:** Efficient storage, automatic cleanup, PWA compliant
 - ❌ **Con:** Complexity in cache invalidation
 - ⚠️ **Risk:** Storage quota limits on some devices
 
 **Sequence Flow:**
+
 ```
 User → Download Request → Download Manager → Fetch Audio
   ↓
@@ -121,16 +127,18 @@ UI Update (Download Complete)
 **Requirement Trace:** Playlist creation, reorder, and persistent queue (MVP Scope)
 
 **Design Approaches Considered:**
+
 1. **Simple FIFO queue** (Too limiting for user control)
 2. **Full playlist editor with drag-drop** (Selected: Better UX)
 
 **UI Flow Design:**
+
 ```
 Playlist Screen
 ├── Create New Playlist [+]
 ├── My Playlists
 │   ├── [Queue] (Special auto-playlist)
-│   ├── [Favorites] 
+│   ├── [Favorites]
 │   └── [Custom Playlist 1]
 └── Episode Actions
     ├── Add to Playlist
@@ -148,10 +156,12 @@ Playlist Screen
 **Requirement Trace:** App initial load under 1.5s on mobile (Success Metrics)
 
 **Design Approaches Considered:**
+
 1. **Single-page monolith** (Risk: Large initial bundle)
 2. **Module-based lazy loading** (Selected: Better performance)
 
 **Resource Loading Strategy:**
+
 ```
 Critical Path:
 ├── App Shell (HTML/CSS/Core JS) < 50KB
@@ -165,6 +175,7 @@ Lazy Loaded:
 ```
 
 **Storage Allocation:**
+
 - **IndexedDB:** Subscriptions, episodes metadata, playlists (~1-5MB)
 - **Cache API:** Downloaded audio files (~100MB default quota)
 - **LocalStorage:** User preferences, UI state (~1MB)
@@ -180,34 +191,34 @@ Lazy Loaded:
 
 ```typescript
 interface Subscription {
-  id: string;
-  title: string;
-  url: string;
-  description?: string;
-  imageUrl?: string;
-  lastFetched: Date;
-  isActive: boolean;
+  id: string
+  title: string
+  url: string
+  description?: string
+  imageUrl?: string
+  lastFetched: Date
+  isActive: boolean
 }
 
 interface Episode {
-  id: string;
-  subscriptionId: string;
-  title: string;
-  description: string;
-  audioUrl: string;
-  duration: number;
-  publishDate: Date;
-  downloadStatus: 'none' | 'downloading' | 'downloaded' | 'error';
-  playbackPosition: number; // seconds
+  id: string
+  subscriptionId: string
+  title: string
+  description: string
+  audioUrl: string
+  duration: number
+  publishDate: Date
+  downloadStatus: 'none' | 'downloading' | 'downloaded' | 'error'
+  playbackPosition: number // seconds
 }
 
 interface Playlist {
-  id: string;
-  name: string;
-  episodeIds: string[];
-  isQueue: boolean; // Special flag for main queue
-  createdAt: Date;
-  updatedAt: Date;
+  id: string
+  name: string
+  episodeIds: string[]
+  isQueue: boolean // Special flag for main queue
+  createdAt: Date
+  updatedAt: Date
 }
 ```
 
@@ -220,17 +231,25 @@ interface Playlist {
 **Requirement Trace:** Installable on mobile devices as a PWA (Core Feature)
 
 **Touch Target Standards:**
+
 - Minimum 44px tap targets (iOS guideline)
 - 8px spacing between interactive elements
 - Swipe gestures for playlist reordering
 - Pull-to-refresh for subscription updates
 
 **Responsive Breakpoints:**
+
 ```css
 /* Mobile First */
-@media (min-width: 320px) { /* Small mobile */ }
-@media (min-width: 768px) { /* Tablet */ }
-@media (min-width: 1024px) { /* Desktop */ }
+@media (min-width: 320px) {
+  /* Small mobile */
+}
+@media (min-width: 768px) {
+  /* Tablet */
+}
+@media (min-width: 1024px) {
+  /* Desktop */
+}
 ```
 
 **[Design → Execution]** Use CSS custom properties for consistent spacing
@@ -243,12 +262,14 @@ interface Playlist {
 **Requirement Trace:** Service Workers for offline functionality (Technologies)
 
 **Caching Strategy:**
+
 1. **App Shell:** Cache-first with network fallback
 2. **RSS Feeds:** Network-first with cache fallback
 3. **Audio Files:** Cache-only (explicitly downloaded)
 4. **Images:** Stale-while-revalidate
 
 **Background Sync Design:**
+
 ```
 User goes offline → Queue RSS updates → Return online → Sync pending updates
 ```
@@ -262,20 +283,20 @@ User goes offline → Queue RSS updates → Return online → Sync pending updat
 
 ### Technical Risks
 
-| **Risk** | **Impact** | **Probability** | **Mitigation** |
-|----------|------------|-----------------|----------------|
-| Browser storage quota exceeded | High | Medium | Implement storage management + user warnings |
-| RSS feed parsing failures | Medium | High | Robust error handling + user feedback |
-| Audio playback inconsistencies | High | Medium | Feature detection + fallback controls |
-| Service Worker update conflicts | Medium | Low | Versioned SW with graceful updates |
+| **Risk**                        | **Impact** | **Probability** | **Mitigation**                               |
+| ------------------------------- | ---------- | --------------- | -------------------------------------------- |
+| Browser storage quota exceeded  | High       | Medium          | Implement storage management + user warnings |
+| RSS feed parsing failures       | Medium     | High            | Robust error handling + user feedback        |
+| Audio playback inconsistencies  | High       | Medium          | Feature detection + fallback controls        |
+| Service Worker update conflicts | Medium     | Low             | Versioned SW with graceful updates           |
 
 ### UX Risks
 
-| **Risk** | **Impact** | **Mitigation** |
-|----------|------------|----------------|
-| Complex playlist UX on small screens | Medium | Progressive disclosure + simplified mobile flow |
-| Download progress unclear | Low | Clear progress indicators + status messaging |
-| Offline state confusion | High | Prominent offline indicators + sync status |
+| **Risk**                             | **Impact** | **Mitigation**                                  |
+| ------------------------------------ | ---------- | ----------------------------------------------- |
+| Complex playlist UX on small screens | Medium     | Progressive disclosure + simplified mobile flow |
+| Download progress unclear            | Low        | Clear progress indicators + status messaging    |
+| Offline state confusion              | High       | Prominent offline indicators + sync status      |
 
 ---
 
@@ -293,6 +314,7 @@ User goes offline → Queue RSS updates → Return online → Sync pending updat
 ### Technology Evolution
 
 **Potential Additions:**
+
 - WebRTC for podcast recommendations sharing
 - Background fetch for larger downloads
 - Web Speech API for voice controls
@@ -327,8 +349,8 @@ User goes offline → Queue RSS updates → Return online → Sync pending updat
 
 ## Change Log
 
-| **Date** | **Change** | **Rationale** | **Impact** |
-|----------|------------|---------------|------------|
+| **Date**   | **Change**               | **Rationale**                            | **Impact**                                             |
+| ---------- | ------------------------ | ---------------------------------------- | ------------------------------------------------------ |
 | 2025-08-30 | Initial design framework | Establish design documentation structure | **[Design → Execution]** Foundation for implementation |
 
 ---
@@ -342,6 +364,7 @@ User goes offline → Queue RSS updates → Return online → Sync pending updat
 Below are two recommended technology stacks aligned to this design: a recommended (DX + performance) stack for a modern, small PWA, and an ultra-minimal, zero-deps variant for single-file or GitHub Pages-first deployments.
 
 Recommended stack (DX + performance)
+
 - App framework: Preact + TypeScript (small, React-compatible)
 - Bundler/dev: Vite (fast builds, easy GH Pages output)
 - Styling: Tailwind CSS (JIT) or vanilla CSS with CSS custom properties
@@ -355,14 +378,17 @@ Recommended stack (DX + performance)
 - Lint/format: ESLint + Prettier, TypeScript strict mode
 
 Why this aligns with the design
+
 - Small, fast, and PWA-first; supports lazy-loading and small app shell.
 - Matches Service Worker Strategy, Performance & Storage, and Playlist UX in this doc.
 
 Trade-offs
+
 - Slightly more setup than vanilla but much better DX and testability.
 - Optional CORS proxy is a small serverless dependency for feeds that block CORS.
 
 Ultra-minimal stack (no-build, zero-deps bias)
+
 - Vanilla ES modules + small TypeScript compilation (optional)
 - Styling: vanilla CSS with custom properties
 - Data: idb-keyval or a small idb wrapper vendored in
@@ -371,15 +397,17 @@ Ultra-minimal stack (no-build, zero-deps bias)
 - PWA: hand-written Service Worker + manifest
 
 Trade-offs
+
 - Minimal footprint and simple GH Pages hosting.
 - More manual wiring, fewer developer ergonomics.
 
 Optional add-ons
+
 - Accessibility: axe in Playwright; keyboard navigation patterns
 - Analytics: privacy-friendly local metrics only
 - CI: GitHub Actions for build/test/deploy and Lighthouse CI
 
 Key assumptions & risks
+
 - Many RSS feeds block CORS; a tiny CORS proxy (Cloudflare Worker) is likely needed for a seamless experience.
 - Storage quotas vary by platform; implement eviction and clear user messaging.
-
