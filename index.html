@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A lightweight Progressive Web App for listening to podcasts">
+    <title>Podcast PWA</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1a1a1a">
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <!-- App Shell - Critical Rendering Path -->
+    <div id="app-shell">
+        <header class="app-header">
+            <h1>Podcast PWA</h1>
+            <nav class="main-nav">
+                <button id="nav-subscriptions" class="nav-btn active">Subscriptions</button>
+                <button id="nav-player" class="nav-btn">Player</button>
+                <button id="nav-playlists" class="nav-btn">Playlists</button>
+            </nav>
+        </header>
+
+        <main id="main-content" class="main-content">
+            <!-- Subscription Manager View -->
+            <section id="subscriptions-view" class="view active">
+                <div class="section-header">
+                    <h2>Subscriptions</h2>
+                    <button id="add-subscription" class="btn-primary">Add Podcast</button>
+                </div>
+                <div id="subscriptions-list" class="subscriptions-list">
+                    <!-- Subscriptions will be loaded here -->
+                    <div class="empty-state">
+                        <p>No subscriptions yet. Add your first podcast!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Player View -->
+            <section id="player-view" class="view">
+                <div id="player-container" class="player-container">
+                    <!-- Audio player will be loaded here -->
+                    <div class="player-placeholder">
+                        <p>Select an episode to start playing</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Playlists View -->
+            <section id="playlists-view" class="view">
+                <div class="section-header">
+                    <h2>Playlists</h2>
+                    <button id="create-playlist" class="btn-primary">Create Playlist</button>
+                </div>
+                <div id="playlists-list" class="playlists-list">
+                    <!-- Playlists will be loaded here -->
+                    <div class="empty-state">
+                        <p>No playlists yet. Create your first playlist!</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Loading and Error States -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Core JavaScript - App Shell -->
+    <script src="js/app.js" type="module"></script>
+</body>
+</html>

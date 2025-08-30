@@ -1,0 +1,44 @@
+{
+  "name": "podcast-pwa",
+  "version": "1.0.0",
+  "description": "A lightweight Progressive Web App for listening to podcasts",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "build": "echo 'No build process needed for vanilla PWA'",
+    "test": "echo 'Tests not yet implemented - see docs/test_scaffolding.md'",
+    "lint": "echo 'Linting not yet configured'",
+    "lighthouse": "echo 'Lighthouse CI not yet configured'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cmwen/podcast-pwa.git"
+  },
+  "keywords": [
+    "pwa",
+    "podcast",
+    "progressive-web-app",
+    "offline",
+    "mobile-first",
+    "indexeddb",
+    "service-worker"
+  ],
+  "author": "cmwen",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^1.0.0",
+    "@playwright/test": "^1.40.0",
+    "lighthouse": "^11.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie <= 11"
+  ]
+}

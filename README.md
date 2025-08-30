@@ -47,6 +47,36 @@ A lightweight Progressive Web App (PWA) for listening to podcasts. This app can 
 
 ## Contributing
 
+### Execution Agent Workflow
+
+This project follows an **Execution Agent** development approach with strict traceability between Product backlog → Design → Execution → QA.
+
+#### Development Principles
+- **Confirm assumptions first** - Always validate design decisions before implementation
+- **Suggest alternatives** - Propose implementation options when requirements are ambiguous  
+- **Highlight risks** - Flag performance, scalability, or maintainability concerns
+- **Test coverage** - Always provide test scaffolding alongside implementation
+
+#### Commit Conventions
+Use these tags for traceability:
+- **[Execution → QA]** - Implementation ready for QA testing
+- **[Design → Execution]** - Implementation of specific design decision
+- **[Backlog → Execution]** - Implementation of backlog item
+- **[Technical Debt]** - Refactoring or improvement work
+
+#### Documentation Requirements
+1. **Update `/docs/execution_log.md`** for each feature implemented
+2. **Link to design decisions** in `/docs/design.md`
+3. **Reference backlog items** from `/docs/vision.md`
+4. **Include test suggestions** following `/docs/test_scaffolding.md`
+
+#### Implementation Standards
+- Mobile-first responsive design
+- PWA compliance (offline-capable, installable)
+- Performance budget: <1.5s load time, <50KB app shell
+- Accessibility: WCAG 2.1 AA compliance
+- Cross-browser compatibility: Chrome, Firefox, Safari
+
 Contributions are welcome! Please fork the repository and submit a pull request.
 
 ## License
