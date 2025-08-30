@@ -238,6 +238,45 @@ This document maintains traceability between **Product backlog items**, **Design
 
 ---
 
+### CI/CD Pipeline Modernization
+
+**Status:** 🟢 Completed  
+**Backlog Item:** Fix deprecated GitHub Actions and npm vulnerabilities  
+**Design Decision:** [Design → Execution] Migrate to pnpm for better dependency management and faster builds  
+**Implementation Approach:** Update GitHub Actions workflow and migrate to pnpm  
+**Files:** `.github/workflows/deploy.yml`, `package.json`, `pnpm-lock.yaml`, `.eslintrc.json`, `.gitignore`
+
+**Implemented Features:**
+
+- ✅ Upgraded GitHub Actions from v3 to v4 (upload-artifact, download-artifact)
+- ✅ Migrated from npm to pnpm for better dependency management
+- ✅ Updated GitHub Actions workflow to use pnpm with caching
+- ✅ Fixed TypeScript build issues with missing dependencies
+- ✅ Removed problematic eslint-plugin-preact causing peer dependency conflicts
+- ✅ Updated ESLint configuration for TypeScript project
+- ✅ Re-enabled linting in CI pipeline
+- ✅ Updated documentation to use pnpm commands
+- ✅ Added packageManager field to package.json
+- ✅ Updated .gitignore to exclude npm files and include pnpm debug logs
+
+**Suggested Unit Tests:**
+
+- ✅ Test pnpm build pipeline functionality
+- ✅ Test ESLint configuration with TypeScript files
+- ✅ Test artifact upload/download in GitHub Actions
+- ✅ Test dependency caching with pnpm
+
+**QA Considerations:** [Design → QA] Test GitHub Actions deployment, verify pnpm caching, cross-browser compatibility
+
+**Technical Debt Notes:**
+
+- Successfully migrated from npm to pnpm reducing vulnerabilities
+- Modernized CI/CD pipeline with latest GitHub Actions
+- ESLint now properly lints TypeScript files
+- Playwright browser installation may need network configuration in restricted environments
+
+---
+
 ## Risk Mitigation & Performance
 
 ### Current Technical Risks
@@ -273,6 +312,8 @@ This document maintains traceability between **Product backlog items**, **Design
 | 2025-01-26 | Mobile-First UI         | 🟢 Completed | Mobile-first UI design                       | [Design → Execution] Progressive enhancement    | Touch-friendly responsive design      |
 | 2025-01-26 | App Shell Architecture  | 🟢 Completed | App initial load under 1.5s on mobile        | [Design → Execution] Module-based lazy loading  | Core app structure with navigation    |
 | 2025-01-26 | Future-Proof Tech Stack | 🟢 Completed | Future-proof project with GitHub deployment  | [Design → Execution] Vite + Preact + TypeScript | Complete modern build system overhaul |
+
+| 2025-01-26 | CI/CD Modernization     | 🟢 Completed | Fix deprecated GitHub Actions and migrate to pnpm | [Design → Execution] Modern dependency management | Updated workflow to v4 actions + pnpm |
 
 ---
 
