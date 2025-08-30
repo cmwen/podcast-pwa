@@ -48,40 +48,40 @@ A lightweight Progressive Web App (PWA) for listening to podcasts. Built with mo
    ```bash
    git clone https://github.com/cmwen/podcast-pwa.git
    cd podcast-pwa
-   npm install
+   pnpm install
    ```
 
 2. **Start development server:**
 
    ```bash
-   npm run dev
+   pnpm run dev
    ```
 
 3. **Build for production:**
 
    ```bash
-   npm run build
+   pnpm run build
    ```
 
 4. **Preview production build:**
    ```bash
-   npm run preview
+   pnpm run preview
    ```
 
 ## Testing
 
 ```bash
 # Unit tests
-npm run test
+pnpm run test
 
 # E2E tests
-npm run test:e2e
+pnpm run test:e2e
 
 # Type checking
-npm run type-check
+pnpm run type-check
 
 # Linting
-npm run lint
+pnpm run lint
 ```
 
 ## Deployment
@@ -97,7 +97,7 @@ The project includes GitHub Actions for automated deployment to GitHub Pages:
 ### Manual Deployment
 
 ```bash
-npm run build
+pnpm run build
 # Deploy the `dist/` folder to your hosting provider
 ```
 
