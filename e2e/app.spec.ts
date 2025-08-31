@@ -21,7 +21,7 @@ test.describe('Podcast PWA', () => {
 
     // Navigate to Player view
     await page.getByRole('button', { name: 'Player' }).click()
-    await expect(page.getByText('Select an episode to start playing')).toBeVisible()
+    await expect(page.getByText('Select an episode from your subscriptions to start playing')).toBeVisible()
 
     // Navigate to Playlists view
     await page.getByRole('button', { name: 'Playlists' }).click()

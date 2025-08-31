@@ -199,4 +199,22 @@ url: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3'
 - `src/components/views/PlayerView.tsx` - Complete audio player debugging and fixes
 - `src/services/rss.ts` - Updated mock audio URLs
 
-These fixes should resolve both the database initialization error and the audio playback issues.
+### 3. E2E Test Failure - Text Mismatch in Player View
+
+**Problem**: E2E tests failing with "Select an episode to start playing" text not found in Player view.
+
+**Root Cause**: Test was looking for incorrect text string. The actual PlayerView component displays "Select an episode from your subscriptions to start playing".
+
+**Fix**: Updated the e2e test to match the actual text in the component.
+
+```typescript
+// Before
+await expect(page.getByText('Select an episode to start playing')).toBeVisible()
+
+// After
+await expect(page.getByText('Select an episode from your subscriptions to start playing')).toBeVisible()
+```
+
+**Files Modified**: `e2e/app.spec.ts`
+
+These fixes should resolve the database initialization error, audio playback issues, and e2e test failures.
