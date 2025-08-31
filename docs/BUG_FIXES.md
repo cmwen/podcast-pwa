@@ -321,4 +321,71 @@ Enhanced CSS with download-specific styles:
 - Automatic offline playback when downloaded episodes are available
 - Storage management for downloaded content
 
-These fixes should resolve the database initialization error, audio playback issues, e2e test failures, and add comprehensive offline download support.
+### 5. Floating Player with Progress and Show Notes
+
+**Problem**: No persistent player controls when navigating away from the player view, and no easy access to show notes while listening.
+
+**Solution**: Implemented a floating player that appears when an episode is loaded, showing progress and providing quick access to episode details.
+
+#### A. Floating Player Component
+
+Created `src/components/FloatingPlayer.tsx` with the following features:
+
+- **Always Visible**: Shows at bottom of screen when episode is loaded (except on player view)
+- **Progress Bar**: Real-time progress indicator at the top
+- **Quick Controls**: Play/pause and expand buttons
+- **Episode Info**: Current episode title and time remaining
+- **Click to Show Notes**: Tap anywhere on the player to see episode details
+
+```typescript
+// Key features:
+export function FloatingPlayer() {
+  // Monitors audio progress in real-time
+  // Shows/hides based on episode state and current view
+  // Handles show notes modal display
+}
+```
+
+#### B. Episode Details Modal
+
+Clicking the floating player shows a modal with:
+
+- **Full Episode Title**: Complete title without truncation
+- **Publication Date**: When the episode was published
+- **Duration**: Total episode length
+- **Download Status**: Shows if episode is downloaded offline
+- **Show Notes**: Full episode description/show notes
+- **Actions**: Open full player or close modal
+
+#### C. Real-time Progress Tracking
+
+The floating player automatically updates with:
+
+- **Current Time**: Shows elapsed time
+- **Total Duration**: Shows total episode length
+- **Progress Bar**: Visual indicator of playback position
+- **Auto-sync**: Updates in real-time with audio element
+
+#### D. Enhanced User Experience
+
+- **Non-intrusive**: Only appears when needed
+- **Quick Access**: Easy play/pause without switching views
+- **Full Details**: Complete show notes accessible with one tap
+- **Mobile Optimized**: Touch-friendly controls and responsive design
+- **Smooth Animations**: Slide-up/down transitions
+
+**Files Modified**:
+
+- `src/components/FloatingPlayer.tsx` - New floating player component
+- `src/components/App.tsx` - Added floating player to app shell
+- `src/styles/main.css` - Added floating player and modal styles
+
+**Benefits**:
+
+- Persistent audio controls across all views
+- Easy access to episode show notes while listening
+- Real-time progress tracking without switching views
+- Improved navigation experience during podcast playback
+- Quick access to full player when needed
+
+These fixes resolve all reported issues and significantly enhance the podcast listening experience with comprehensive offline support and floating player functionality.

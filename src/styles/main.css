@@ -102,7 +102,9 @@ body {
 /* Main Content */
 .main-content {
   flex: 1;
-  padding: var(--spacing-md);
+  padding: var(--spacing-lg);
+  padding-bottom: calc(var(--spacing-lg) + 80px); /* Space for floating player */
+  overflow-y: auto;
 }
 
 /* Views */
@@ -1002,4 +1004,250 @@ audio {
 .download-status.error {
   background-color: var(--error-color);
   color: white;
+}
+
+/* Floating Player Styles */
+.floating-player {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--surface-color);
+  border-top: 1px solid var(--border-color);
+  z-index: 1000;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  transform: translateY(100%);
+}
+
+.floating-player.playing {
+  transform: translateY(0);
+}
+
+.floating-player-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: var(--border-color);
+}
+
+.floating-player-progress .progress-fill {
+  height: 100%;
+  background-color: var(--primary-color);
+  transition: width 0.3s ease;
+}
+
+.floating-player-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+  gap: var(--spacing-md);
+}
+
+.floating-player-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.floating-player-info .episode-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.floating-player-info .episode-time {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.floating-player-controls {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+.play-pause-btn-mini {
+  background: var(--primary-color);
+  border: none;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.play-pause-btn-mini:hover {
+  background: var(--primary-dark);
+  transform: scale(1.05);
+}
+
+.expand-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.expand-btn:hover {
+  background: var(--border-color);
+  color: var(--text-color);
+}
+
+/* Episode Details Modal */
+.episode-details-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+}
+
+.episode-details-modal {
+  background-color: var(--surface-color);
+  border-radius: var(--border-radius);
+  max-width: 600px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+}
+
+.episode-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.episode-details-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  flex: 1;
+  margin-right: var(--spacing-md);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1.2rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background-color: var(--border-color);
+  color: var(--text-color);
+}
+
+.episode-details-content {
+  padding: var(--spacing-lg);
+}
+
+.episode-meta {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.episode-meta > div {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.episode-description h4 {
+  margin-bottom: var(--spacing-md);
+  color: var(--text-color);
+}
+
+.description-text {
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: var(--spacing-sm);
+}
+
+.episode-details-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+  justify-content: flex-end;
+}
+
+/* Mobile adjustments for floating player */
+@media (max-width: 768px) {
+  .floating-player-content {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .floating-player-info .episode-title {
+    font-size: 0.85rem;
+  }
+
+  .floating-player-info .episode-time {
+    font-size: 0.75rem;
+  }
+
+  .play-pause-btn-mini {
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+  }
+
+  .expand-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+
+  .episode-details-modal {
+    margin: var(--spacing-md);
+    max-height: 90vh;
+  }
+
+  .episode-details-header,
+  .episode-details-content {
+    padding: var(--spacing-md);
+  }
+
+  .episode-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
 }

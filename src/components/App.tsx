@@ -6,6 +6,7 @@ import { SubscriptionsView } from './views/SubscriptionsView'
 import { PlayerView } from './views/PlayerView'
 import { PlaylistsView } from './views/PlaylistsView'
 import { LoadingOverlay } from './LoadingOverlay'
+import { FloatingPlayer } from './FloatingPlayer'
 
 // Global app state using Preact signals
 export const appState = signal<AppState>({
@@ -83,6 +84,9 @@ export function App() {
           <span>Offline mode</span>
         </div>
       )}
+
+      {/* Floating Player */}
+      <FloatingPlayer />
 
       <LoadingOverlay show={state.isLoading} />
     </div>
