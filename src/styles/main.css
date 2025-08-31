@@ -211,6 +211,20 @@ body {
   margin-bottom: var(--spacing-md);
 }
 
+/* Offline Indicator */
+.offline-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--warning-color);
+  color: var(--background-color);
+  text-align: center;
+  padding: var(--spacing-sm);
+  font-weight: 600;
+  z-index: 1001;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);

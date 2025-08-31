@@ -12,8 +12,8 @@ test.describe('Podcast PWA', () => {
     await expect(page.getByRole('button', { name: 'Player' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Playlists' })).toBeVisible()
 
-    // Check for default view
-    await expect(page.getByText('No subscriptions yet')).toBeVisible()
+    // Check for default view - updated to match actual text
+    await expect(page.getByText('No subscriptions yet. Add your first podcast!')).toBeVisible()
   })
 
   test('should navigate between views', async ({ page }) => {
@@ -25,11 +25,11 @@ test.describe('Podcast PWA', () => {
 
     // Navigate to Playlists view
     await page.getByRole('button', { name: 'Playlists' }).click()
-    await expect(page.getByText('No playlists yet')).toBeVisible()
+    await expect(page.getByText('No playlists yet. Create your first playlist!')).toBeVisible()
 
     // Navigate back to Subscriptions
     await page.getByRole('button', { name: 'Subscriptions' }).click()
-    await expect(page.getByText('No subscriptions yet')).toBeVisible()
+    await expect(page.getByText('No subscriptions yet. Add your first podcast!')).toBeVisible()
   })
 
   test('should be a PWA', async ({ page }) => {
@@ -39,20 +39,33 @@ test.describe('Podcast PWA', () => {
     const manifestLink = page.locator('link[rel="manifest"]')
     await expect(manifestLink).toHaveCount(1)
 
-    // Check for service worker registration (in console logs)
-    const logs: string[] = []
-    page.on('console', msg => logs.push(msg.text()))
+    // Wait for service worker registration and check navigator.serviceWorker
+    await page.waitForTimeout(3000) // Give service worker time to register
 
-    await page.waitForTimeout(1000) // Wait for service worker registration
+    const hasServiceWorker = await page.evaluate(() => {
+      return 'serviceWorker' in navigator
+    })
+    expect(hasServiceWorker).toBeTruthy()
 
-    expect(logs.some(log => log.includes('Service Worker'))).toBeTruthy()
+    // Optionally check if service worker is actually registered
+    const swRegistration = await page.evaluate(async () => {
+      if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.getRegistration()
+        return !!registration
+      }
+      return false
+    })
+    expect(swRegistration).toBeTruthy()
   })
 
   test('should work offline', async ({ page, context }) => {
     await page.goto('/')
 
-    // Go offline
+    // Go offline by setting context offline and triggering the event
     await context.setOffline(true)
+    await page.evaluate(() => {
+      window.dispatchEvent(new Event('offline'))
+    })
 
     // App should still be accessible
     await expect(page.getByRole('heading', { name: 'Podcast PWA' })).toBeVisible()
@@ -64,17 +77,19 @@ test.describe('Podcast PWA', () => {
   test('should handle add subscription interaction', async ({ page }) => {
     await page.goto('/')
 
-    // Mock dialog
-    page.on('dialog', dialog => {
-      expect(dialog.type()).toBe('prompt')
-      expect(dialog.message()).toContain('RSS feed URL')
-      dialog.accept('https://example.com/rss')
-    })
-
     // Click add subscription button
     await page.getByRole('button', { name: 'Add Podcast' }).click()
 
+    // Should show the form
+    await expect(page.getByText('Add New Podcast')).toBeVisible()
+
+    // Fill in the RSS URL
+    await page.getByLabel('RSS Feed URL:').fill('https://example.com/rss')
+
+    // Click Add Subscription button (this will show loading state)
+    await page.getByRole('button', { name: 'Add Subscription' }).click()
+
     // Should show loading state
-    await expect(page.getByText('Loading...')).toBeVisible()
+    await expect(page.getByText('Adding...')).toBeVisible()
   })
 })

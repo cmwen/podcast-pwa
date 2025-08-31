@@ -103,7 +103,7 @@ export function SubscriptionsView() {
   }
 
   return (
-    <section className="view">
+    <section>
       <div className="section-header">
         <h2>Subscriptions</h2>
         {!isAddingSubscription && (

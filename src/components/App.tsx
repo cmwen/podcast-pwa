@@ -58,19 +58,6 @@ export function App() {
     appState.value = { ...appState.value, currentView: view }
   }
 
-  const renderCurrentView = () => {
-    switch (state.currentView) {
-      case 'subscriptions':
-        return <SubscriptionsView />
-      case 'player':
-        return <PlayerView />
-      case 'playlists':
-        return <PlaylistsView />
-      default:
-        return <SubscriptionsView />
-    }
-  }
-
   return (
     <div id="app-shell" className="app-shell">
       <header className="app-header">
@@ -78,7 +65,17 @@ export function App() {
         <Navigation currentView={state.currentView} onViewChange={handleViewChange} />
       </header>
 
-      <main className="main-content">{renderCurrentView()}</main>
+      <main className="main-content">
+        <div className={`view ${state.currentView === 'subscriptions' ? 'active' : ''}`}>
+          <SubscriptionsView />
+        </div>
+        <div className={`view ${state.currentView === 'player' ? 'active' : ''}`}>
+          <PlayerView />
+        </div>
+        <div className={`view ${state.currentView === 'playlists' ? 'active' : ''}`}>
+          <PlaylistsView />
+        </div>
+      </main>
 
       {/* Online/Offline indicator */}
       {!state.isOnline && (

@@ -34,7 +34,7 @@ export function PlaylistsView() {
   }
 
   return (
-    <section className="view">
+    <section>
       <div className="section-header">
         <h2>Playlists</h2>
         <button

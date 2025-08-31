@@ -8,7 +8,7 @@ export function PlayerView() {
   const state = appState.value
 
   return (
-    <section className="view">
+    <section>
       <div className="player-container">
         {state.currentEpisode ? (
           <div className="player-active">
