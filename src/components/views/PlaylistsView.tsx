@@ -46,7 +46,7 @@ export function PlaylistsView() {
       const playlist = playlists.find(p => p.id === playlistId)
       if (playlist) {
         const episodes = await Promise.all(
-          playlist.episodeIds.map(async (episodeId) => {
+          playlist.episodeIds.map(async episodeId => {
             const episode = await storageService.getEpisodeById(episodeId)
             return episode
           })
@@ -144,7 +144,7 @@ export function PlaylistsView() {
       }
 
       await storageService.updatePlaylist(updatedPlaylist)
-      setPlaylists(prev => prev.map(p => p.id === playlistId ? updatedPlaylist : p))
+      setPlaylists(prev => prev.map(p => (p.id === playlistId ? updatedPlaylist : p)))
 
       if (selectedPlaylist === playlistId) {
         await loadPlaylistEpisodes(playlistId)
@@ -169,7 +169,7 @@ export function PlaylistsView() {
       }
 
       await storageService.updatePlaylist(updatedPlaylist)
-      setPlaylists(prev => prev.map(p => p.id === playlistId ? updatedPlaylist : p))
+      setPlaylists(prev => prev.map(p => (p.id === playlistId ? updatedPlaylist : p)))
 
       if (selectedPlaylist === playlistId) {
         await loadPlaylistEpisodes(playlistId)
@@ -187,17 +187,13 @@ export function PlaylistsView() {
       <div className="section-header">
         <h2>Playlists</h2>
         {!selectedPlaylist && (
-          <button
-            className="btn-primary"
-            onClick={handleCreatePlaylist}
-            disabled={loading}
-          >
+          <button className="btn-primary" onClick={handleCreatePlaylist} disabled={loading}>
             Create Playlist
           </button>
         )}
         {selectedPlaylist && (
-          <button 
-            className="btn-secondary" 
+          <button
+            className="btn-secondary"
             onClick={() => {
               setSelectedPlaylist(null)
               setPlaylistEpisodes([])
@@ -213,9 +209,7 @@ export function PlaylistsView() {
           {playlists.length === 0 ? (
             <div className="empty-state">
               <p>No playlists yet. Create your first playlist!</p>
-              <p className="help-text">
-                Organize your favorite episodes into custom playlists.
-              </p>
+              <p className="help-text">Organize your favorite episodes into custom playlists.</p>
             </div>
           ) : (
             <div className="playlist-grid">
@@ -223,9 +217,7 @@ export function PlaylistsView() {
                 <div key={playlist.id} className="playlist-card">
                   <div className="playlist-info">
                     <h3 className="playlist-name">{playlist.name}</h3>
-                    <p className="playlist-meta">
-                      {playlist.episodeIds.length} episode(s)
-                    </p>
+                    <p className="playlist-meta">{playlist.episodeIds.length} episode(s)</p>
                     <p className="playlist-date">
                       Created: {playlist.createdAt.toLocaleDateString()}
                     </p>
@@ -289,7 +281,8 @@ export function PlaylistsView() {
                               </span>
                               {episode.duration > 0 && (
                                 <span className="episode-duration">
-                                  {Math.floor(episode.duration / 60)}:{(episode.duration % 60).toString().padStart(2, '0')}
+                                  {Math.floor(episode.duration / 60)}:
+                                  {(episode.duration % 60).toString().padStart(2, '0')}
                                 </span>
                               )}
                             </div>
@@ -304,7 +297,9 @@ export function PlaylistsView() {
                             </button>
                             <button
                               className="btn-danger"
-                              onClick={() => handleRemoveEpisodeFromPlaylist(selectedPlaylist, episode.id)}
+                              onClick={() =>
+                                handleRemoveEpisodeFromPlaylist(selectedPlaylist, episode.id)
+                              }
                               title="Remove from playlist"
                             >
                               Remove
@@ -333,7 +328,9 @@ export function PlaylistsView() {
                             </div>
                             <button
                               className="btn-secondary"
-                              onClick={() => handleAddEpisodeToPlaylist(selectedPlaylist, episode.id)}
+                              onClick={() =>
+                                handleAddEpisodeToPlaylist(selectedPlaylist, episode.id)
+                              }
                               title="Add to playlist"
                             >
                               Add

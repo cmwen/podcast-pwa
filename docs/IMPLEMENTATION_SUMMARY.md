@@ -17,6 +17,7 @@ Successfully implemented a fully working podcast player with complete end-to-end
 **Previous State**: Could only add RSS subscriptions but couldn't see episodes.
 
 **Implemented**:
+
 - Automatic episode fetching when adding subscriptions
 - Episode storage in IndexedDB
 - "View Episodes" button for each subscription
@@ -24,6 +25,7 @@ Successfully implemented a fully working podcast player with complete end-to-end
 - Episode listing with metadata (title, description, publish date, duration)
 
 **Files Modified**:
+
 - `src/components/views/SubscriptionsView.tsx` - Complete overhaul with episode management
 - `src/services/storage.ts` - Enhanced with episode batch operations
 
@@ -32,6 +34,7 @@ Successfully implemented a fully working podcast player with complete end-to-end
 **Previous State**: Placeholder player with no actual audio functionality.
 
 **Implemented**:
+
 - HTML5 audio integration with full controls
 - Play/pause, skip forward (30s), skip backward (15s)
 - Progress bar with seek functionality
@@ -42,6 +45,7 @@ Successfully implemented a fully working podcast player with complete end-to-end
 - Error handling for network issues
 
 **Files Modified**:
+
 - `src/components/views/PlayerView.tsx` - Complete rewrite with audio controls
 
 ### 3. Playlist Management System
@@ -49,6 +53,7 @@ Successfully implemented a fully working podcast player with complete end-to-end
 **Previous State**: Empty placeholder view.
 
 **Implemented**:
+
 - Create custom playlists
 - Add episodes to playlists from episode browser
 - Remove episodes from playlists
@@ -57,12 +62,14 @@ Successfully implemented a fully working podcast player with complete end-to-end
 - Episode browser showing available episodes to add
 
 **Files Modified**:
+
 - `src/components/views/PlaylistsView.tsx` - Complete implementation
 - `src/services/storage.ts` - Added playlist CRUD operations
 
 ### 4. Enhanced Storage Service
 
 **New Capabilities**:
+
 - Batch episode operations (`addEpisodes`, `getAllEpisodes`)
 - Episode filtering by subscription
 - Automatic episode cleanup when removing subscriptions
@@ -72,6 +79,7 @@ Successfully implemented a fully working podcast player with complete end-to-end
 ### 5. Improved User Interface
 
 **Visual Enhancements**:
+
 - Episode grid layouts with responsive design
 - Episode cards with metadata display
 - Player controls with modern styling
@@ -81,6 +89,7 @@ Successfully implemented a fully working podcast player with complete end-to-end
 - Progress bars and sliders with custom styling
 
 **CSS Additions**:
+
 - Episode display styles
 - Audio player controls
 - Playlist management interface
@@ -112,6 +121,7 @@ Successfully implemented a fully working podcast player with complete end-to-end
 ### State Management
 
 Enhanced the Preact signals-based state to include:
+
 - Current episode tracking
 - Playback state management
 - View navigation
@@ -120,6 +130,7 @@ Enhanced the Preact signals-based state to include:
 ### Data Persistence
 
 All data is stored locally using IndexedDB:
+
 - Subscriptions with metadata
 - Episodes with playback positions
 - Custom playlists with episode references
@@ -155,16 +166,20 @@ All data is stored locally using IndexedDB:
 ## CORS Limitations & Solutions
 
 ### The Challenge
+
 Real RSS feeds are blocked by CORS policies in browsers, which is a common limitation for web-based podcast players.
 
 ### Implemented Solutions
+
 1. **Multiple CORS Proxy Fallbacks**: The app tries several proxy services automatically
 2. **Mock RSS Feeds**: Added `test://` protocol for demo feeds that work without CORS issues
 3. **Better Error Messages**: Clear explanations when CORS blocks requests
 4. **Comprehensive Documentation**: Detailed explanation of the issue and production solutions
 
 ### Testing the App
+
 Users can test the full functionality using:
+
 - `test://huberman` - Mock Huberman Lab podcast with 3 episodes
 - `test://rogan` - Mock Joe Rogan Experience with 1 episode
 
@@ -183,6 +198,7 @@ While the app is now fully functional, potential improvements include:
 ## Files Created/Modified
 
 ### Major Changes:
+
 - `src/components/views/SubscriptionsView.tsx` - Complete episode management
 - `src/components/views/PlayerView.tsx` - Full audio player implementation
 - `src/components/views/PlaylistsView.tsx` - Complete playlist functionality
@@ -190,6 +206,7 @@ While the app is now fully functional, potential improvements include:
 - `src/styles/main.css` - Comprehensive UI styling
 
 ### Type Definitions:
+
 - All existing types in `src/types/index.ts` are utilized
 - No breaking changes to existing interfaces
 

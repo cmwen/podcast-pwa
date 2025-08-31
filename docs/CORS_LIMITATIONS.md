@@ -5,6 +5,7 @@
 When trying to fetch RSS feeds directly from a web browser, you'll encounter CORS (Cross-Origin Resource Sharing) errors. This is a security feature that prevents web pages from making requests to different domains without explicit permission.
 
 **Example Error:**
+
 ```
 Access to fetch at 'https://feeds.megaphone.fm/hubermanlab' from origin 'http://localhost:5173' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
 ```
@@ -20,6 +21,7 @@ Access to fetch at 'https://feeds.megaphone.fm/hubermanlab' from origin 'http://
 ### 🔧 Development/Testing Solutions
 
 #### 1. **Browser CORS Disable** (Testing Only)
+
 ```bash
 # Chrome (macOS)
 open -n -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security --disable-features=VizDisplayCompositor
@@ -31,77 +33,86 @@ chrome.exe --user-data-dir="C:\temp\chrome_dev_test" --disable-web-security --di
 ⚠️ **WARNING**: Only use this for testing. Never browse the internet with CORS disabled.
 
 #### 2. **CORS Proxy Services** (Already Implemented)
+
 The app tries multiple proxy services:
+
 - `corsproxy.io`
-- `cors-anywhere.herokuapp.com` 
+- `cors-anywhere.herokuapp.com`
 - `api.allorigins.win`
 
 Note: These are unreliable and not suitable for production.
 
 #### 3. **Test RSS Feeds**
+
 Some feeds that might work for testing (CORS-enabled):
+
 - `https://feeds.npr.org/1001/podcast.xml`
 - `https://rss.cnn.com/rss/edition.rss`
 
 ### 🚀 Production Solutions
 
 #### 1. **Serverless Function Proxy** (Recommended)
+
 Create a serverless function (Vercel, Netlify, AWS Lambda) that:
 
 ```javascript
 // api/rss-proxy.js (Vercel example)
 export default async function handler(req, res) {
-  const { url } = req.query;
-  
+  const { url } = req.query
+
   if (!url) {
-    return res.status(400).json({ error: 'Missing url parameter' });
+    return res.status(400).json({ error: 'Missing url parameter' })
   }
-  
+
   try {
-    const response = await fetch(url);
-    const rssContent = await response.text();
-    
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Content-Type', 'application/xml');
-    res.status(200).send(rssContent);
+    const response = await fetch(url)
+    const rssContent = await response.text()
+
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Content-Type', 'application/xml')
+    res.status(200).send(rssContent)
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch RSS feed' });
+    res.status(500).json({ error: 'Failed to fetch RSS feed' })
   }
 }
 ```
 
 Then update your RSS service to use:
+
 ```typescript
-const proxyUrl = `https://yourapp.vercel.app/api/rss-proxy?url=${encodeURIComponent(url)}`;
+const proxyUrl = `https://yourapp.vercel.app/api/rss-proxy?url=${encodeURIComponent(url)}`
 ```
 
 #### 2. **Express.js Backend**
-```javascript
-const express = require('express');
-const cors = require('cors');
-const fetch = require('node-fetch');
 
-const app = express();
-app.use(cors());
+```javascript
+const express = require('express')
+const cors = require('cors')
+const fetch = require('node-fetch')
+
+const app = express()
+app.use(cors())
 
 app.get('/api/rss', async (req, res) => {
   try {
-    const response = await fetch(req.query.url);
-    const rssContent = await response.text();
-    res.set('Content-Type', 'application/xml');
-    res.send(rssContent);
+    const response = await fetch(req.query.url)
+    const rssContent = await response.text()
+    res.set('Content-Type', 'application/xml')
+    res.send(rssContent)
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message })
   }
-});
+})
 ```
 
 #### 3. **Browser Extension** (Alternative)
+
 Build a browser extension that has permission to make cross-origin requests.
 
 ### 🧪 Alternative Testing Approaches
 
 #### 1. **Mock RSS Data**
+
 For development, create mock RSS feeds in your app:
 
 ```typescript
@@ -116,20 +127,22 @@ const MOCK_FEEDS = {
         description: 'Test episode description',
         url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
         duration: 120,
-        publishDate: new Date()
-      }
-    ]
-  }
-};
+        publishDate: new Date(),
+      },
+    ],
+  },
+}
 
 // In fetchFeed method
 if (url.startsWith('test://')) {
-  return MOCK_FEEDS[url] || { title: 'Unknown', episodes: [] };
+  return MOCK_FEEDS[url] || { title: 'Unknown', episodes: [] }
 }
 ```
 
 #### 2. **Local RSS Files**
+
 Serve RSS files from your public directory:
+
 ```
 public/
   sample-feeds/
@@ -155,6 +168,7 @@ Access via: `http://localhost:5173/sample-feeds/huberman.xml`
 ## Testing the Current Implementation
 
 Try these URLs that might work:
+
 - `test://huberman` (if mock feeds are implemented)
 - Public feeds with CORS headers (rare)
 - Local XML files in your public directory

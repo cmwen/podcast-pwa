@@ -16,7 +16,7 @@ export function PlayerView() {
 
   // Subscribe to app state changes
   useEffect(() => {
-    const unsubscribe = appState.subscribe((newState) => {
+    const unsubscribe = appState.subscribe(newState => {
       setState(newState)
     })
     return unsubscribe
@@ -28,17 +28,17 @@ export function PlayerView() {
       const audio = audioRef.current
       console.log(`[Player] Loading episode: ${state.currentEpisode.title}`)
       console.log(`[Player] Audio URL: ${state.currentEpisode.audioUrl}`)
-      
+
       // Only update src if it's different to avoid unnecessary reloads
       if (audio.src !== state.currentEpisode.audioUrl) {
         audio.src = state.currentEpisode.audioUrl
         audio.load()
       }
-      
+
       audio.currentTime = state.currentEpisode.playbackPosition
       audio.playbackRate = state.playbackSpeed
       audio.volume = volume
-      
+
       console.log(`[Player] Episode loaded, ready to play`)
     }
   }, [state.currentEpisode?.id]) // Only depend on episode ID, not the whole object
@@ -55,15 +55,16 @@ export function PlayerView() {
     if (audioRef.current && state.currentEpisode) {
       const audio = audioRef.current
       console.log(`[Player] Play state changed to: ${state.isPlaying}`)
-      
+
       if (state.isPlaying) {
         // Check if audio is ready before trying to play
         if (audio.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-          audio.play()
+          audio
+            .play()
             .then(() => {
               console.log('[Player] Audio started playing successfully')
             })
-            .catch((error) => {
+            .catch(error => {
               console.error('[Player] Failed to start audio:', error)
               // Don't automatically reset state to prevent infinite loop
               // Just log the error and let user try again
@@ -83,7 +84,7 @@ export function PlayerView() {
     if (audioRef.current) {
       const time = audioRef.current.currentTime
       setCurrentTime(time)
-      
+
       // Save playback position periodically
       if (state.currentEpisode && Math.floor(time) % 5 === 0) {
         savePlaybackPosition(time)
@@ -100,14 +101,15 @@ export function PlayerView() {
 
   const handleCanPlay = () => {
     console.log('[Player] Audio can start playing')
-    
+
     // If user clicked play but audio wasn't ready, try to play now
     if (state.isPlaying && audioRef.current) {
-      audioRef.current.play()
+      audioRef.current
+        .play()
         .then(() => {
           console.log('[Player] Audio started playing after becoming ready')
         })
-        .catch((error) => {
+        .catch(error => {
           console.error('[Player] Failed to start audio even after ready:', error)
         })
     }
@@ -126,18 +128,19 @@ export function PlayerView() {
     console.error('[Player] Audio error details:', {
       code: audioError?.code,
       message: audioError?.message,
-      src: audioRef.current?.src
+      src: audioRef.current?.src,
     })
-    
+
     // Don't automatically reset playing state to prevent loops
     // Let the user handle the error by trying again or switching episodes
-    
+
     // Show user-friendly error message
     let errorMessage = 'Failed to load audio.'
     if (audioError) {
       switch (audioError.code) {
         case MediaError.MEDIA_ERR_NETWORK:
-          errorMessage = 'Network error while loading audio. Please check your internet connection and try again.'
+          errorMessage =
+            'Network error while loading audio. Please check your internet connection and try again.'
           break
         case MediaError.MEDIA_ERR_DECODE:
           errorMessage = 'Audio format not supported or file is corrupted.'
@@ -149,7 +152,7 @@ export function PlayerView() {
           errorMessage = 'Unknown audio error occurred.'
       }
     }
-    
+
     // Show error but don't auto-reset state
     console.warn('[Player] Error message would show:', errorMessage)
     // Commenting out alert to prevent interrupting user experience
@@ -171,30 +174,34 @@ export function PlayerView() {
   const togglePlayPause = () => {
     console.log(`[Player] Toggle play/pause clicked. Current state: ${state.isPlaying}`)
     console.log(`[Player] Current episode:`, state.currentEpisode?.title)
-    
+
     if (!state.currentEpisode) {
       console.warn('[Player] No episode loaded')
       alert('No episode loaded. Please select an episode first.')
       return
     }
-    
+
     if (!audioRef.current) {
       console.warn('[Player] Audio element not available')
       return
     }
-    
+
     // Check if this is a real URL that might have CORS issues
-    if (state.currentEpisode.audioUrl.includes('megaphone.fm') || 
-        state.currentEpisode.audioUrl.includes('libsyn.com') ||
-        (!state.currentEpisode.audioUrl.startsWith('test://') && 
-         !state.currentEpisode.audioUrl.includes('learningcontainer.com'))) {
+    if (
+      state.currentEpisode.audioUrl.includes('megaphone.fm') ||
+      state.currentEpisode.audioUrl.includes('libsyn.com') ||
+      (!state.currentEpisode.audioUrl.startsWith('test://') &&
+        !state.currentEpisode.audioUrl.includes('learningcontainer.com'))
+    ) {
       console.warn('[Player] Real podcast URL detected - may have CORS issues')
-      alert('This appears to be a real podcast URL which may not work due to CORS restrictions. Try using test://huberman or test://rogan for demo purposes.')
+      alert(
+        'This appears to be a real podcast URL which may not work due to CORS restrictions. Try using test://huberman or test://rogan for demo purposes.'
+      )
     }
-    
+
     const newPlayingState = !state.isPlaying
     console.log(`[Player] Setting playing state to: ${newPlayingState}`)
-    
+
     appState.value = {
       ...appState.value,
       isPlaying: newPlayingState,
@@ -276,14 +283,10 @@ export function PlayerView() {
 
             <div className="player-controls">
               <div className="main-controls">
-                <button
-                  className="skip-btn"
-                  onClick={skipBackward}
-                  title="Skip back 15 seconds"
-                >
+                <button className="skip-btn" onClick={skipBackward} title="Skip back 15 seconds">
                   ⏪ 15s
                 </button>
-                
+
                 <button
                   className="play-pause-btn"
                   onClick={togglePlayPause}
@@ -291,12 +294,8 @@ export function PlayerView() {
                 >
                   {state.isPlaying ? '⏸️' : '▶️'}
                 </button>
-                
-                <button
-                  className="skip-btn"
-                  onClick={skipForward}
-                  title="Skip forward 30 seconds"
-                >
+
+                <button className="skip-btn" onClick={skipForward} title="Skip forward 30 seconds">
                   30s ⏩
                 </button>
               </div>
@@ -357,7 +356,7 @@ export function PlayerView() {
               >
                 Back to Subscriptions
               </button>
-              
+
               {/* Debug button for audio testing */}
               <button
                 className="btn-secondary"
@@ -372,7 +371,7 @@ export function PlayerView() {
                       duration: audioRef.current.duration,
                       volume: audioRef.current.volume,
                       muted: audioRef.current.muted,
-                      error: audioRef.current.error
+                      error: audioRef.current.error,
                     })
                   }
                 }}
@@ -380,16 +379,16 @@ export function PlayerView() {
               >
                 Debug Audio
               </button>
-              
+
               {/* Reset player button */}
               <button
                 className="btn-secondary"
                 onClick={() => {
                   console.log('[Player] Resetting player state')
-                  appState.value = { 
-                    ...appState.value, 
+                  appState.value = {
+                    ...appState.value,
                     isPlaying: false,
-                    currentEpisode: null
+                    currentEpisode: null,
                   }
                   if (audioRef.current) {
                     audioRef.current.pause()

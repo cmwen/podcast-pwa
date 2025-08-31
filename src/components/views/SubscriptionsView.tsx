@@ -37,7 +37,9 @@ export function SubscriptionsView() {
     try {
       const episodeList = await storageService.getEpisodesBySubscription(subscriptionId)
       setEpisodes(episodeList)
-      console.log(`[Execution] Loaded ${episodeList.length} episodes for subscription ${subscriptionId}`)
+      console.log(
+        `[Execution] Loaded ${episodeList.length} episodes for subscription ${subscriptionId}`
+      )
     } catch (error) {
       console.error('[Execution] Failed to load episodes:', error)
     } finally {
@@ -113,7 +115,7 @@ export function SubscriptionsView() {
       console.log('[Execution] Subscription added successfully:', subscription.title)
     } catch (error) {
       console.error('[Execution] Add subscription failed:', error)
-      
+
       // Check if it's a CORS error and provide helpful message
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       if (errorMessage.includes('CORS') || errorMessage.includes('Failed to fetch')) {
@@ -167,25 +169,25 @@ export function SubscriptionsView() {
     try {
       console.log(`[Execution] Refreshing episodes for: ${subscription.title}`)
       const feed = await rssService.fetchFeed(subscription.url)
-      
+
       // Update last fetched time
       const updatedSubscription = { ...subscription, lastFetched: new Date() }
       await storageService.updateSubscription(updatedSubscription)
-      
+
       // Clear existing episodes and add new ones
       await storageService.deleteEpisodesBySubscription(subscription.id)
       await fetchAndStoreEpisodes(updatedSubscription, feed)
-      
+
       // Reload episodes if this subscription is currently selected
       if (selectedSubscription === subscription.id) {
         await loadEpisodesForSubscription(subscription.id)
       }
-      
+
       // Update subscription in local state
-      setSubscriptions(prev => 
-        prev.map(sub => sub.id === subscription.id ? updatedSubscription : sub)
+      setSubscriptions(prev =>
+        prev.map(sub => (sub.id === subscription.id ? updatedSubscription : sub))
       )
-      
+
       console.log('[Execution] Episodes refreshed successfully')
     } catch (error) {
       console.error('[Execution] Failed to refresh episodes:', error)
@@ -214,8 +216,8 @@ export function SubscriptionsView() {
           </button>
         )}
         {selectedSubscription && (
-          <button 
-            className="btn-secondary" 
+          <button
+            className="btn-secondary"
             onClick={() => {
               setSelectedSubscription(null)
               setEpisodes([])
@@ -328,7 +330,7 @@ export function SubscriptionsView() {
             <h3>Episodes</h3>
             {loadingEpisodes && <span className="loading-text">Loading episodes...</span>}
           </div>
-          
+
           {episodes.length === 0 && !loadingEpisodes ? (
             <div className="empty-state">
               <p>No episodes found for this podcast.</p>
@@ -350,7 +352,8 @@ export function SubscriptionsView() {
                       </span>
                       {episode.duration > 0 && (
                         <span className="episode-duration">
-                          {Math.floor(episode.duration / 60)}:{(episode.duration % 60).toString().padStart(2, '0')}
+                          {Math.floor(episode.duration / 60)}:
+                          {(episode.duration % 60).toString().padStart(2, '0')}
                         </span>
                       )}
                     </div>

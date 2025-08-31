@@ -31,7 +31,7 @@ class RSSService {
 
       // Use CORS proxy for development (would need serverless function for production)
       const isDev = import.meta.env?.DEV || false
-      
+
       if (isDev) {
         // Try multiple CORS proxy services
         const proxies = [
@@ -39,7 +39,7 @@ class RSSService {
           `https://cors-anywhere.herokuapp.com/${url}`,
           `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
         ]
-        
+
         let lastError
         for (const proxyUrl of proxies) {
           try {
@@ -48,18 +48,18 @@ class RSSService {
             if (!response.ok) {
               throw new Error(`HTTP ${response.status}: ${response.statusText}`)
             }
-            
+
             // Handle different proxy response formats
             const responseText = await response.text()
             let text
-            
+
             if (proxyUrl.includes('allorigins.win')) {
               const parsed = JSON.parse(responseText)
               text = parsed.contents
             } else {
               text = responseText
             }
-            
+
             return this.parseFeed(text, url)
           } catch (error) {
             console.warn(`[RSS] Proxy failed: ${proxyUrl}`, error)
@@ -67,7 +67,7 @@ class RSSService {
             continue
           }
         }
-        
+
         throw lastError || new Error('All CORS proxies failed')
       } else {
         // Production: direct fetch (would fail due to CORS, needs server-side proxy)
@@ -204,7 +204,7 @@ class RSSService {
    */
   validateFeedUrl(url: string): boolean {
     if (url.startsWith('test://')) return true // Allow mock feeds
-    
+
     try {
       const urlObj = new URL(url)
       return urlObj.protocol === 'http:' || urlObj.protocol === 'https:'
@@ -225,21 +225,24 @@ class RSSService {
         episodes: [
           {
             title: 'Episode 1: Demo Episode About Sleep',
-            description: 'This is a mock episode about sleep optimization. In a real app, this would contain the full episode description with detailed show notes.',
+            description:
+              'This is a mock episode about sleep optimization. In a real app, this would contain the full episode description with detailed show notes.',
             url: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3',
             duration: 3600, // 1 hour
             publishDate: new Date('2024-01-15'),
           },
           {
             title: 'Episode 2: Demo Episode About Exercise',
-            description: 'This is a mock episode about exercise and fitness. This demonstrates how episodes would appear in the app.',
+            description:
+              'This is a mock episode about exercise and fitness. This demonstrates how episodes would appear in the app.',
             url: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3',
             duration: 4200, // 70 minutes
             publishDate: new Date('2024-01-08'),
           },
           {
             title: 'Episode 3: Demo Episode About Nutrition',
-            description: 'This is a mock episode about nutrition and diet. Perfect for testing the podcast player functionality.',
+            description:
+              'This is a mock episode about nutrition and diet. Perfect for testing the podcast player functionality.',
             url: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3',
             duration: 3300, // 55 minutes
             publishDate: new Date('2024-01-01'),
@@ -262,12 +265,14 @@ class RSSService {
       },
     }
 
-    return mockFeeds[url] || {
-      title: 'Unknown Mock Feed',
-      description: 'This mock feed was not found',
-      link: url,
-      episodes: [],
-    }
+    return (
+      mockFeeds[url] || {
+        title: 'Unknown Mock Feed',
+        description: 'This mock feed was not found',
+        link: url,
+        episodes: [],
+      }
+    )
   }
 }
 
