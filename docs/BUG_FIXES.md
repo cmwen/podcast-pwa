@@ -212,7 +212,9 @@ url: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3'
 await expect(page.getByText('Select an episode to start playing')).toBeVisible()
 
 // After
-await expect(page.getByText('Select an episode from your subscriptions to start playing')).toBeVisible()
+await expect(
+  page.getByText('Select an episode from your subscriptions to start playing')
+).toBeVisible()
 ```
 
 **Files Modified**: `e2e/app.spec.ts`
