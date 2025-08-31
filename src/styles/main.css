@@ -445,6 +445,23 @@ body {
   margin-top: var(--spacing-sm);
 }
 
+.help-text code {
+  background-color: var(--border-color);
+  color: var(--primary-color);
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.85em;
+}
+
+.help-text small {
+  display: block;
+  margin-top: var(--spacing-xs);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
 /* Responsive subscription grid */
 @media (min-width: 768px) {
   .subscription-grid {
@@ -460,4 +477,434 @@ body {
   .subscription-grid {
     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   }
+}
+
+/* Episodes Styles */
+.episodes-list {
+  margin-top: var(--spacing-lg);
+}
+
+.episodes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.episodes-header h3 {
+  color: var(--text-color);
+  font-size: 1.2rem;
+}
+
+.loading-text {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.episode-grid {
+  display: grid;
+  gap: var(--spacing-md);
+  grid-template-columns: 1fr;
+}
+
+.episode-card {
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.episode-card.compact {
+  padding: var(--spacing-md);
+  flex-direction: row;
+  align-items: center;
+}
+
+.episode-info {
+  flex: 1;
+}
+
+.episode-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-color);
+  line-height: 1.4;
+}
+
+.episode-card.compact .episode-title {
+  font-size: 0.9rem;
+  margin-bottom: var(--spacing-xs);
+}
+
+.episode-description {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
+  line-height: 1.5;
+}
+
+.episode-meta {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.episode-date {
+  color: var(--text-secondary);
+}
+
+.episode-duration {
+  background-color: var(--border-color);
+  color: var(--text-color);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.episode-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: flex-end;
+}
+
+/* Player Styles */
+.player-active {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.player-info {
+  text-align: center;
+}
+
+.player-info h3 {
+  font-size: 1.3rem;
+  margin-bottom: var(--spacing-md);
+  color: var(--text-color);
+}
+
+.player-info .episode-description {
+  text-align: left;
+}
+
+.player-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.main-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.play-pause-btn {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.play-pause-btn:hover {
+  background-color: var(--primary-dark);
+  transform: scale(1.05);
+}
+
+.skip-btn {
+  background-color: var(--surface-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.skip-btn:hover {
+  background-color: var(--border-color);
+}
+
+.progress-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--border-color);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.progress-bar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.progress-bar::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+.time-display {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  min-width: 45px;
+  text-align: center;
+}
+
+.secondary-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.volume-control button {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.volume-slider {
+  width: 80px;
+  height: 4px;
+  background: var(--border-color);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+.playback-speed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.playback-speed label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.playback-speed input {
+  width: 80px;
+}
+
+.episode-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+/* Playlist Styles */
+.playlist-grid {
+  display: grid;
+  gap: var(--spacing-md);
+  grid-template-columns: 1fr;
+}
+
+.playlist-card {
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.playlist-info {
+  flex: 1;
+}
+
+.playlist-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-color);
+}
+
+.playlist-meta {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: var(--spacing-xs);
+}
+
+.playlist-date {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.playlist-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: flex-end;
+}
+
+.playlist-details {
+  margin-top: var(--spacing-lg);
+}
+
+.playlist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.playlist-header h3 {
+  color: var(--text-color);
+  font-size: 1.3rem;
+}
+
+.playlist-episodes {
+  margin-bottom: var(--spacing-xl);
+}
+
+.add-episodes-section {
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+}
+
+.add-episodes-section h4 {
+  color: var(--text-color);
+  margin-bottom: var(--spacing-md);
+}
+
+.available-episodes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Responsive Episode and Playlist Grids */
+@media (min-width: 768px) {
+  .episode-grid {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  }
+  
+  .playlist-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+
+  .player-controls {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .secondary-controls {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+@media (min-width: 1024px) {
+  .episode-grid {
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  }
+  
+  .playlist-grid {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  }
+}
+
+/* Mobile Player Optimization */
+@media (max-width: 480px) {
+  .main-controls {
+    gap: var(--spacing-md);
+  }
+  
+  .play-pause-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+  
+  .secondary-controls {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .volume-control,
+  .playback-speed {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Focus and Accessibility */
+.episode-card:focus-within,
+.playlist-card:focus-within,
+.subscription-card:focus-within {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Audio element (hidden) */
+audio {
+  display: none;
 }

@@ -55,7 +55,19 @@ class StorageService {
 
   async removeSubscription(id: string): Promise<void> {
     if (!this.db) throw new Error('Database not initialized')
+    // Remove subscription and all associated episodes
+    await this.deleteEpisodesBySubscription(id)
     await this.db.delete('subscriptions', id)
+  }
+
+  async getSubscriptionById(id: string): Promise<Subscription | undefined> {
+    if (!this.db) throw new Error('Database not initialized')
+    return this.db.get('subscriptions', id)
+  }
+
+  async updateSubscription(subscription: Subscription): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized')
+    await this.db.put('subscriptions', subscription)
   }
 
   // Episode methods
@@ -64,14 +76,42 @@ class StorageService {
     await this.db.add('episodes', episode)
   }
 
+  async addEpisodes(episodes: Episode[]): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized')
+    const tx = this.db.transaction('episodes', 'readwrite')
+    await Promise.all(episodes.map(episode => tx.store.put(episode)))
+    await tx.done
+  }
+
   async getEpisodesBySubscription(subscriptionId: string): Promise<Episode[]> {
     if (!this.db) throw new Error('Database not initialized')
-    return this.db.getAllFromIndex('episodes', 'subscriptionId', subscriptionId)
+    const episodes = await this.db.getAllFromIndex('episodes', 'subscriptionId', subscriptionId)
+    // Sort by publish date, newest first
+    return episodes.sort((a, b) => b.publishDate.getTime() - a.publishDate.getTime())
+  }
+
+  async getAllEpisodes(): Promise<Episode[]> {
+    if (!this.db) throw new Error('Database not initialized')
+    const episodes = await this.db.getAll('episodes')
+    return episodes.sort((a, b) => b.publishDate.getTime() - a.publishDate.getTime())
+  }
+
+  async getEpisodeById(id: string): Promise<Episode | undefined> {
+    if (!this.db) throw new Error('Database not initialized')
+    return this.db.get('episodes', id)
   }
 
   async updateEpisode(episode: Episode): Promise<void> {
     if (!this.db) throw new Error('Database not initialized')
     await this.db.put('episodes', episode)
+  }
+
+  async deleteEpisodesBySubscription(subscriptionId: string): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized')
+    const episodes = await this.getEpisodesBySubscription(subscriptionId)
+    const tx = this.db.transaction('episodes', 'readwrite')
+    await Promise.all(episodes.map(episode => tx.store.delete(episode.id)))
+    await tx.done
   }
 
   // Playlist methods
@@ -85,9 +125,19 @@ class StorageService {
     return this.db.getAll('playlists')
   }
 
+  async getPlaylistById(id: string): Promise<Playlist | undefined> {
+    if (!this.db) throw new Error('Database not initialized')
+    return this.db.get('playlists', id)
+  }
+
   async updatePlaylist(playlist: Playlist): Promise<void> {
     if (!this.db) throw new Error('Database not initialized')
     await this.db.put('playlists', playlist)
+  }
+
+  async deletePlaylist(id: string): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized')
+    await this.db.delete('playlists', id)
   }
 }
 

@@ -24,18 +24,60 @@ class RSSService {
     try {
       console.log(`[RSS] Fetching feed: ${url}`)
 
-      // Use CORS proxy for development (would need serverless function for production)
-      const isDev = import.meta.env?.DEV || false
-      const proxyUrl = isDev ? `https://api.allorigins.win/get?url=${encodeURIComponent(url)}` : url
-
-      const response = await fetch(proxyUrl)
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      // Handle mock feeds for testing
+      if (url.startsWith('test://')) {
+        return this.getMockFeed(url)
       }
 
-      const text = isDev ? JSON.parse(await response.text()).contents : await response.text()
-
-      return this.parseFeed(text, url)
+      // Use CORS proxy for development (would need serverless function for production)
+      const isDev = import.meta.env?.DEV || false
+      
+      if (isDev) {
+        // Try multiple CORS proxy services
+        const proxies = [
+          `https://corsproxy.io/?${encodeURIComponent(url)}`,
+          `https://cors-anywhere.herokuapp.com/${url}`,
+          `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+        ]
+        
+        let lastError
+        for (const proxyUrl of proxies) {
+          try {
+            console.log(`[RSS] Trying proxy: ${proxyUrl}`)
+            const response = await fetch(proxyUrl)
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+            }
+            
+            // Handle different proxy response formats
+            const responseText = await response.text()
+            let text
+            
+            if (proxyUrl.includes('allorigins.win')) {
+              const parsed = JSON.parse(responseText)
+              text = parsed.contents
+            } else {
+              text = responseText
+            }
+            
+            return this.parseFeed(text, url)
+          } catch (error) {
+            console.warn(`[RSS] Proxy failed: ${proxyUrl}`, error)
+            lastError = error
+            continue
+          }
+        }
+        
+        throw lastError || new Error('All CORS proxies failed')
+      } else {
+        // Production: direct fetch (would fail due to CORS, needs server-side proxy)
+        const response = await fetch(url)
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+        }
+        const text = await response.text()
+        return this.parseFeed(text, url)
+      }
     } catch (error) {
       console.error(`[RSS] Failed to fetch feed ${url}:`, error)
       throw new Error(`Failed to fetch RSS feed: ${error}`)
@@ -161,11 +203,70 @@ class RSSService {
    * Validate RSS feed URL format
    */
   validateFeedUrl(url: string): boolean {
+    if (url.startsWith('test://')) return true // Allow mock feeds
+    
     try {
       const urlObj = new URL(url)
       return urlObj.protocol === 'http:' || urlObj.protocol === 'https:'
     } catch {
       return false
+    }
+  }
+
+  /**
+   * Get mock RSS feed for testing
+   */
+  private getMockFeed(url: string): RSSFeed {
+    const mockFeeds: Record<string, RSSFeed> = {
+      'test://huberman': {
+        title: 'Huberman Lab (Demo)',
+        description: 'Mock podcast feed for testing the app functionality',
+        link: url,
+        episodes: [
+          {
+            title: 'Episode 1: Demo Episode About Sleep',
+            description: 'This is a mock episode about sleep optimization. In a real app, this would contain the full episode description with detailed show notes.',
+            url: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3',
+            duration: 3600, // 1 hour
+            publishDate: new Date('2024-01-15'),
+          },
+          {
+            title: 'Episode 2: Demo Episode About Exercise',
+            description: 'This is a mock episode about exercise and fitness. This demonstrates how episodes would appear in the app.',
+            url: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3',
+            duration: 4200, // 70 minutes
+            publishDate: new Date('2024-01-08'),
+          },
+          {
+            title: 'Episode 3: Demo Episode About Nutrition',
+            description: 'This is a mock episode about nutrition and diet. Perfect for testing the podcast player functionality.',
+            url: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3',
+            duration: 3300, // 55 minutes
+            publishDate: new Date('2024-01-01'),
+          },
+        ],
+      },
+      'test://rogan': {
+        title: 'Joe Rogan Experience (Demo)',
+        description: 'Mock JRE feed for testing',
+        link: url,
+        episodes: [
+          {
+            title: 'JRE #1999: Demo Guest',
+            description: 'A mock episode featuring a demo guest discussing interesting topics.',
+            url: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3',
+            duration: 7200, // 2 hours
+            publishDate: new Date('2024-01-10'),
+          },
+        ],
+      },
+    }
+
+    return mockFeeds[url] || {
+      title: 'Unknown Mock Feed',
+      description: 'This mock feed was not found',
+      link: url,
+      episodes: [],
     }
   }
 }
