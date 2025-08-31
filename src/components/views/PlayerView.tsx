@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'preact/hooks'
 import { appState } from '../App'
 import { storageService } from '../../services/storage'
+import { downloadService } from '../../services/download'
 
 /**
  * Player View Component
@@ -29,17 +30,34 @@ export function PlayerView() {
       console.log(`[Player] Loading episode: ${state.currentEpisode.title}`)
       console.log(`[Player] Audio URL: ${state.currentEpisode.audioUrl}`)
 
-      // Only update src if it's different to avoid unnecessary reloads
-      if (audio.src !== state.currentEpisode.audioUrl) {
-        audio.src = state.currentEpisode.audioUrl
-        audio.load()
+      const loadAudio = async () => {
+        let audioUrl = state.currentEpisode!.audioUrl
+
+        // Check if episode is downloaded and use local version
+        if (state.currentEpisode!.downloadStatus === 'downloaded') {
+          const downloadedUrl = await downloadService.getDownloadedEpisodeUrl(
+            state.currentEpisode!.id
+          )
+          if (downloadedUrl) {
+            audioUrl = downloadedUrl
+            console.log(`[Player] Using downloaded audio for: ${state.currentEpisode!.title}`)
+          }
+        }
+
+        // Only update src if it's different to avoid unnecessary reloads
+        if (audio.src !== audioUrl) {
+          audio.src = audioUrl
+          audio.load()
+        }
+
+        audio.currentTime = state.currentEpisode!.playbackPosition
+        audio.playbackRate = state.playbackSpeed
+        audio.volume = volume
+
+        console.log(`[Player] Episode loaded, ready to play`)
       }
 
-      audio.currentTime = state.currentEpisode.playbackPosition
-      audio.playbackRate = state.playbackSpeed
-      audio.volume = volume
-
-      console.log(`[Player] Episode loaded, ready to play`)
+      loadAudio()
     }
   }, [state.currentEpisode?.id]) // Only depend on episode ID, not the whole object
 
@@ -184,19 +202,6 @@ export function PlayerView() {
     if (!audioRef.current) {
       console.warn('[Player] Audio element not available')
       return
-    }
-
-    // Check if this is a real URL that might have CORS issues
-    if (
-      state.currentEpisode.audioUrl.includes('megaphone.fm') ||
-      state.currentEpisode.audioUrl.includes('libsyn.com') ||
-      (!state.currentEpisode.audioUrl.startsWith('test://') &&
-        !state.currentEpisode.audioUrl.includes('learningcontainer.com'))
-    ) {
-      console.warn('[Player] Real podcast URL detected - may have CORS issues')
-      alert(
-        'This appears to be a real podcast URL which may not work due to CORS restrictions. Try using test://huberman or test://rogan for demo purposes.'
-      )
     }
 
     const newPlayingState = !state.isPlaying

@@ -219,4 +219,106 @@ await expect(
 
 **Files Modified**: `e2e/app.spec.ts`
 
-These fixes should resolve the database initialization error, audio playback issues, and e2e test failures.
+### 4. Warning Popup Removal and Offline Download Support
+
+**Problem**: Warning popup shown when clicking play button for certain URLs, and no offline support for downloaded episodes.
+
+**Solutions Implemented**:
+
+#### A. Removed Warning Popup
+
+Removed the CORS warning popup that would show for certain podcast URLs when clicking the play button. This improves user experience by eliminating interruptions.
+
+```typescript
+// Removed this warning check from togglePlayPause:
+if (
+  state.currentEpisode.audioUrl.includes('megaphone.fm') ||
+  state.currentEpisode.audioUrl.includes('libsyn.com') ||
+  // ... other URL checks
+) {
+  alert('This appears to be a real podcast URL which may not work due to CORS restrictions...')
+}
+```
+
+#### B. Implemented Download Service
+
+Created a comprehensive download service (`src/services/download.ts`) with the following features:
+
+- **Episode Download**: Downloads audio files to IndexedDB for offline listening
+- **Progress Tracking**: Real-time download progress with cancellation support
+- **Local Playback**: Serves downloaded audio via blob URLs
+- **Storage Management**: Handles storage and deletion of downloaded files
+
+```typescript
+// Key features:
+class DownloadService {
+  async downloadEpisode(episode: Episode, onProgress?: (progress: DownloadProgress) => void)
+  async deleteDownload(episode: Episode)
+  async getDownloadedEpisodeUrl(episodeId: string): Promise<string | null>
+  cancelDownload(episodeId: string)
+}
+```
+
+#### C. Enhanced Player with Offline Support
+
+Updated PlayerView to automatically use downloaded audio when available:
+
+```typescript
+// Check if episode is downloaded and use local version
+if (state.currentEpisode!.downloadStatus === 'downloaded') {
+  const downloadedUrl = await downloadService.getDownloadedEpisodeUrl(state.currentEpisode!.id)
+  if (downloadedUrl) {
+    audioUrl = downloadedUrl
+    console.log(`[Player] Using downloaded audio for: ${state.currentEpisode!.title}`)
+  }
+}
+```
+
+#### D. Added Download UI Controls
+
+Enhanced SubscriptionsView with download functionality:
+
+- **Download Buttons**: Download, cancel, retry, and delete options
+- **Progress Indicators**: Visual progress bars during downloads
+- **Status Badges**: "Offline" indicators for downloaded episodes
+- **State Management**: Tracks download progress and status
+
+```typescript
+// Download states and controls:
+{episode.downloadStatus === 'none' && (
+  <button onClick={() => handleDownloadEpisode(episode)}>📥 Download</button>
+)}
+{episode.downloadStatus === 'downloading' && (
+  <button onClick={() => handleCancelDownload(episode)}>❌ Cancel</button>
+)}
+{episode.downloadStatus === 'downloaded' && (
+  <button onClick={() => handleDeleteDownload(episode)}>✅ Downloaded</button>
+)}
+```
+
+#### E. Added Download Progress Styling
+
+Enhanced CSS with download-specific styles:
+
+- Progress bars with animated fills
+- Download status indicators
+- Success/error state styling
+- Mobile-responsive download controls
+
+**Files Modified**:
+
+- `src/services/download.ts` - New download service
+- `src/components/views/PlayerView.tsx` - Removed warning, added offline playback
+- `src/components/views/SubscriptionsView.tsx` - Added download UI and functionality
+- `src/styles/main.css` - Added download progress and button styles
+- `src/types/index.ts` - Already had download status types
+
+**Benefits**:
+
+- Episodes can be downloaded for offline listening
+- No more interrupting warning popups
+- Real-time download progress with cancellation
+- Automatic offline playback when downloaded episodes are available
+- Storage management for downloaded content
+
+These fixes should resolve the database initialization error, audio playback issues, e2e test failures, and add comprehensive offline download support.

@@ -2,7 +2,8 @@ import { useState, useEffect } from 'preact/hooks'
 import { appState } from '../App'
 import { storageService } from '../../services/storage'
 import { rssService } from '../../services/rss'
-import type { Subscription, Episode } from '../../types'
+import { downloadService } from '../../services/download'
+import type { Subscription, Episode, DownloadProgress } from '../../types'
 
 /**
  * Subscriptions View Component
@@ -15,6 +16,7 @@ export function SubscriptionsView() {
   const [selectedSubscription, setSelectedSubscription] = useState<string | null>(null)
   const [episodes, setEpisodes] = useState<Episode[]>([])
   const [loadingEpisodes, setLoadingEpisodes] = useState(false)
+  const [downloadProgress, setDownloadProgress] = useState<Map<string, DownloadProgress>>(new Map())
 
   // Load subscriptions on component mount
   useEffect(() => {
@@ -162,6 +164,65 @@ export function SubscriptionsView() {
       currentView: 'player',
       isPlaying: false, // Will be controlled by the player
     }
+  }
+
+  const handleDownloadEpisode = async (episode: Episode) => {
+    try {
+      console.log('[Execution] Starting download for episode:', episode.title)
+
+      await downloadService.downloadEpisode(episode, progress => {
+        setDownloadProgress(prev => new Map(prev.set(episode.id, progress)))
+      })
+
+      // Reload episodes to update download status
+      if (selectedSubscription) {
+        await loadEpisodesForSubscription(selectedSubscription)
+      }
+
+      console.log('[Execution] Episode downloaded successfully:', episode.title)
+    } catch (error) {
+      console.error('[Execution] Failed to download episode:', error)
+      alert(
+        `Failed to download episode: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
+    } finally {
+      setDownloadProgress(prev => {
+        const newMap = new Map(prev)
+        newMap.delete(episode.id)
+        return newMap
+      })
+    }
+  }
+
+  const handleDeleteDownload = async (episode: Episode) => {
+    if (!confirm('Are you sure you want to delete this downloaded episode?')) return
+
+    try {
+      console.log('[Execution] Deleting download for episode:', episode.title)
+      await downloadService.deleteDownload(episode)
+
+      // Reload episodes to update download status
+      if (selectedSubscription) {
+        await loadEpisodesForSubscription(selectedSubscription)
+      }
+
+      console.log('[Execution] Download deleted successfully:', episode.title)
+    } catch (error) {
+      console.error('[Execution] Failed to delete download:', error)
+      alert(
+        `Failed to delete download: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
+    }
+  }
+
+  const handleCancelDownload = (episode: Episode) => {
+    console.log('[Execution] Cancelling download for episode:', episode.title)
+    downloadService.cancelDownload(episode.id)
+    setDownloadProgress(prev => {
+      const newMap = new Map(prev)
+      newMap.delete(episode.id)
+      return newMap
+    })
   }
 
   const handleRefreshEpisodes = async (subscription: Subscription) => {
@@ -356,6 +417,9 @@ export function SubscriptionsView() {
                           {(episode.duration % 60).toString().padStart(2, '0')}
                         </span>
                       )}
+                      {episode.downloadStatus === 'downloaded' && (
+                        <span className="offline-badge">Offline</span>
+                      )}
                     </div>
                   </div>
                   <div className="episode-actions">
@@ -366,6 +430,64 @@ export function SubscriptionsView() {
                     >
                       Play
                     </button>
+
+                    {/* Download controls */}
+                    {episode.downloadStatus === 'none' && (
+                      <button
+                        className="btn-secondary"
+                        onClick={() => handleDownloadEpisode(episode)}
+                        title="Download for offline listening"
+                      >
+                        📥 Download
+                      </button>
+                    )}
+
+                    {episode.downloadStatus === 'downloading' && (
+                      <>
+                        <button
+                          className="btn-secondary"
+                          onClick={() => handleCancelDownload(episode)}
+                          title="Cancel download"
+                        >
+                          ❌ Cancel
+                        </button>
+                        {downloadProgress.has(episode.id) && (
+                          <div className="download-progress">
+                            <div className="progress-bar">
+                              <div
+                                className="progress-fill"
+                                style={{
+                                  width: `${downloadProgress.get(episode.id)?.progress || 0}%`,
+                                }}
+                              />
+                            </div>
+                            <span className="progress-text">
+                              {downloadProgress.get(episode.id)?.progress || 0}%
+                            </span>
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {episode.downloadStatus === 'downloaded' && (
+                      <button
+                        className="btn-success"
+                        onClick={() => handleDeleteDownload(episode)}
+                        title="Delete downloaded file"
+                      >
+                        ✅ Downloaded
+                      </button>
+                    )}
+
+                    {episode.downloadStatus === 'error' && (
+                      <button
+                        className="btn-danger"
+                        onClick={() => handleDownloadEpisode(episode)}
+                        title="Retry download"
+                      >
+                        ⚠️ Retry
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
