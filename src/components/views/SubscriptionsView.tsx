@@ -3,7 +3,7 @@ import { appState } from '../App'
 import { storageService } from '../../services/storage'
 import { rssService } from '../../services/rss'
 import { downloadService } from '../../services/download'
-import type { Subscription, Episode, DownloadProgress } from '../../types'
+import type { Subscription, Episode, DownloadProgress, Playlist } from '../../types'
 
 /**
  * Subscriptions View Component
@@ -17,11 +17,80 @@ export function SubscriptionsView() {
   const [episodes, setEpisodes] = useState<Episode[]>([])
   const [loadingEpisodes, setLoadingEpisodes] = useState(false)
   const [downloadProgress, setDownloadProgress] = useState<Map<string, DownloadProgress>>(new Map())
+  const [playlists, setPlaylists] = useState<Playlist[]>([])
+  const [showPlaylistMenu, setShowPlaylistMenu] = useState<string | null>(null)
 
   // Load subscriptions on component mount
   useEffect(() => {
     loadSubscriptions()
+    loadPlaylists()
+    initializeDefaultPodcast()
   }, [])
+
+  // Close playlist menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (showPlaylistMenu) {
+        const target = e.target as HTMLElement
+        if (!target.closest('.playlist-menu-container')) {
+          setShowPlaylistMenu(null)
+        }
+      }
+    }
+
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [showPlaylistMenu])
+
+  const initializeDefaultPodcast = async () => {
+    try {
+      await storageService.init()
+      const subs = await storageService.getSubscriptions()
+      
+      // If no subscriptions exist, add the default podcast
+      if (subs.length === 0) {
+        console.log('[Execution] No subscriptions found, adding default podcast')
+        const defaultFeedUrl = 'https://cmwen.github.io/podcasts/feed.xml'
+        
+        try {
+          const feed = await rssService.fetchFeed(defaultFeedUrl)
+          
+          const subscription: Subscription = {
+            id: crypto.randomUUID(),
+            title: feed.title || 'Default Podcast',
+            url: defaultFeedUrl,
+            description: feed.description,
+            imageUrl: undefined,
+            lastFetched: new Date(),
+            isActive: true,
+          }
+          
+          await storageService.addSubscription(subscription)
+          await fetchAndStoreEpisodes(subscription, feed)
+          
+          // Reload subscriptions to show the new one
+          await loadSubscriptions()
+          
+          console.log('[Execution] Default podcast added successfully')
+        } catch (error) {
+          console.error('[Execution] Failed to add default podcast:', error)
+          // Don't show error to user on initial load, just log it
+        }
+      }
+    } catch (error) {
+      console.error('[Execution] Failed to initialize default podcast:', error)
+    }
+  }
+
+  const loadPlaylists = async () => {
+    try {
+      await storageService.init()
+      const playlistList = await storageService.getPlaylists()
+      setPlaylists(playlistList)
+    } catch (error) {
+      console.error('[Execution] Failed to load playlists:', error)
+    }
+  }
 
   const loadSubscriptions = async () => {
     try {
@@ -267,6 +336,60 @@ export function SubscriptionsView() {
     setNewFeedUrl('')
   }
 
+  const handleAddToPlaylist = async (episode: Episode, playlistId: string) => {
+    try {
+      const playlist = playlists.find(p => p.id === playlistId)
+      if (!playlist) return
+
+      if (playlist.episodeIds.includes(episode.id)) {
+        alert('Episode is already in this playlist')
+        return
+      }
+
+      const updatedPlaylist = {
+        ...playlist,
+        episodeIds: [...playlist.episodeIds, episode.id],
+        updatedAt: new Date(),
+      }
+
+      await storageService.updatePlaylist(updatedPlaylist)
+      setPlaylists(prev => prev.map(p => (p.id === playlistId ? updatedPlaylist : p)))
+      setShowPlaylistMenu(null)
+
+      console.log('[Execution] Episode added to playlist:', playlist.name)
+      alert(`Added "${episode.title}" to "${playlist.name}"`)
+    } catch (error) {
+      console.error('[Execution] Failed to add episode to playlist:', error)
+      alert('Failed to add episode to playlist')
+    }
+  }
+
+  const handleCreatePlaylistWithEpisode = async (episode: Episode) => {
+    const playlistName = prompt('Enter new playlist name:')
+    if (!playlistName?.trim()) return
+
+    try {
+      const newPlaylist: Playlist = {
+        id: crypto.randomUUID(),
+        name: playlistName.trim(),
+        episodeIds: [episode.id],
+        isQueue: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+
+      await storageService.addPlaylist(newPlaylist)
+      setPlaylists(prev => [...prev, newPlaylist])
+      setShowPlaylistMenu(null)
+
+      console.log('[Execution] Created playlist with episode:', playlistName)
+      alert(`Created playlist "${playlistName}" with episode`)
+    } catch (error) {
+      console.error('[Execution] Failed to create playlist:', error)
+      alert('Failed to create playlist')
+    }
+  }
+
   return (
     <section>
       <div className="section-header">
@@ -304,6 +427,8 @@ export function SubscriptionsView() {
             />
             <p className="help-text">
               Try these demo feeds: <code>test://huberman</code> or <code>test://rogan</code>
+              <br />
+              Or enter your own RSS feed URL (e.g., <code>https://cmwen.github.io/podcasts/feed.xml</code>)
               <br />
               <small>Real RSS feeds may be blocked by CORS policy in browsers.</small>
             </p>
@@ -430,6 +555,51 @@ export function SubscriptionsView() {
                     >
                       Play
                     </button>
+
+                    {/* Add to Playlist button */}
+                    <div className="playlist-menu-container" style={{ position: 'relative' }}>
+                      <button
+                        className="btn-secondary"
+                        onClick={() =>
+                          setShowPlaylistMenu(
+                            showPlaylistMenu === episode.id ? null : episode.id
+                          )
+                        }
+                        title="Add to playlist"
+                      >
+                        ➕ Playlist
+                      </button>
+                      {showPlaylistMenu === episode.id && (
+                        <div className="playlist-dropdown">
+                          {playlists.length === 0 ? (
+                            <button
+                              className="playlist-menu-item"
+                              onClick={() => handleCreatePlaylistWithEpisode(episode)}
+                            >
+                              Create New Playlist
+                            </button>
+                          ) : (
+                            <>
+                              {playlists.map(playlist => (
+                                <button
+                                  key={playlist.id}
+                                  className="playlist-menu-item"
+                                  onClick={() => handleAddToPlaylist(episode, playlist.id)}
+                                >
+                                  {playlist.name}
+                                </button>
+                              ))}
+                              <button
+                                className="playlist-menu-item playlist-menu-create"
+                                onClick={() => handleCreatePlaylistWithEpisode(episode)}
+                              >
+                                + Create New Playlist
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </div>
 
                     {/* Download controls */}
                     {episode.downloadStatus === 'none' && (
