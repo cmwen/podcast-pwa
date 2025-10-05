@@ -46,15 +46,15 @@ export function SubscriptionsView() {
     try {
       await storageService.init()
       const subs = await storageService.getSubscriptions()
-      
+
       // If no subscriptions exist, add the default podcast
       if (subs.length === 0) {
         console.log('[Execution] No subscriptions found, adding default podcast')
         const defaultFeedUrl = 'https://cmwen.github.io/podcasts/feed.xml'
-        
+
         try {
           const feed = await rssService.fetchFeed(defaultFeedUrl)
-          
+
           const subscription: Subscription = {
             id: crypto.randomUUID(),
             title: feed.title || 'Default Podcast',
@@ -64,13 +64,13 @@ export function SubscriptionsView() {
             lastFetched: new Date(),
             isActive: true,
           }
-          
+
           await storageService.addSubscription(subscription)
           await fetchAndStoreEpisodes(subscription, feed)
-          
+
           // Reload subscriptions to show the new one
           await loadSubscriptions()
-          
+
           console.log('[Execution] Default podcast added successfully')
         } catch (error) {
           console.error('[Execution] Failed to add default podcast:', error)
@@ -428,7 +428,8 @@ export function SubscriptionsView() {
             <p className="help-text">
               Try these demo feeds: <code>test://huberman</code> or <code>test://rogan</code>
               <br />
-              Or enter your own RSS feed URL (e.g., <code>https://cmwen.github.io/podcasts/feed.xml</code>)
+              Or enter your own RSS feed URL (e.g.,{' '}
+              <code>https://cmwen.github.io/podcasts/feed.xml</code>)
               <br />
               <small>Real RSS feeds may be blocked by CORS policy in browsers.</small>
             </p>
@@ -561,9 +562,7 @@ export function SubscriptionsView() {
                       <button
                         className="btn-secondary"
                         onClick={() =>
-                          setShowPlaylistMenu(
-                            showPlaylistMenu === episode.id ? null : episode.id
-                          )
+                          setShowPlaylistMenu(showPlaylistMenu === episode.id ? null : episode.id)
                         }
                         title="Add to playlist"
                       >
