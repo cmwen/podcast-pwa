@@ -12,8 +12,9 @@ test.describe('Podcast PWA', () => {
     await expect(page.getByRole('button', { name: 'Player' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Playlists' })).toBeVisible()
 
-    // Check for default view - updated to match actual text
-    await expect(page.getByText('No subscriptions yet. Add your first podcast!')).toBeVisible()
+    // Check that subscriptions section is visible (default podcast should auto-load)
+    await expect(page.getByRole('heading', { name: 'Subscriptions' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Add Podcast' })).toBeVisible()
   })
 
   test('should navigate between views', async ({ page }) => {
@@ -31,7 +32,9 @@ test.describe('Podcast PWA', () => {
 
     // Navigate back to Subscriptions
     await page.getByRole('button', { name: 'Subscriptions' }).click()
-    await expect(page.getByText('No subscriptions yet. Add your first podcast!')).toBeVisible()
+    // Check that we're back on subscriptions view
+    await expect(page.getByRole('heading', { name: 'Subscriptions' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Add Podcast' })).toBeVisible()
   })
 
   test('should be a PWA', async ({ page }) => {
